@@ -1,0 +1,661 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="serviceList.js" target="head"></h:outputScript>
+                        <p:messages id="msg" autoUpdate="true" closable="true" /> 
+                        <p:panelGrid columns="6" styleClass="plgQuery">
+                            <f:facet name="header">
+                                <p:commandButton id="btnLoad" value="#{i18n.btnRefresh}" actionListener="#{serviceManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-refresh"  update=":formList"/>
+                            </f:facet>                    
+                            <h:outputLabel value="DayBegin:" for="daybegin" />
+                            <p:calendar id="daybegin" value="#{serviceManagedBean.dayBegin}" title="Day" pattern="yyyy/MM/dd"
+                                        required="true" requiredMessage="The day field is required."/>
+                            <h:outputLabel value="DayEnd:" for="dayend" />
+                            <p:calendar id="dayend" value="#{serviceManagedBean.dayEnd}" title="Day" pattern="yyyy/MM/dd"
+                                        required="true" requiredMessage="The day field is required."/>
+                        </p:panelGrid>   
+                        <p:dataTable id="tblList" value="#{serviceManagedBean.services}" var="item"  paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="#{i18n.btnCreate}" actionListener="#{serviceManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew" />
+                                <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="服务单号"/>
+                                </f:facet>
+                                <h:outputText value="#{item.serviceid}"/>
+                            </p:column>
+                            <p:column  styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="日期"/>
+                                </f:facet>
+                                <h:outputText value="#{item.servicedate}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column   styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="客户"/>
+                                </f:facet>
+                                <h:outputText value="#{item.customerid.customer}"/>
+                            </p:column>
+                            <p:column  styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="处理部门"/>
+                                </f:facet>
+                                <h:outputText value="#{item.deptid.dept}"/>
+                            </p:column>
+                            <p:column  styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="区域"/>
+                                </f:facet>
+                                <h:outputText value="#{item.areaid}"/>
+                            </p:column>
+                            <p:column   styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="服务类别"/>
+                                </f:facet>
+                                <h:outputText value="#{item.kindid.servicekind}"/>
+                            </p:column>
+                            <p:column   styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="服务方式"/>
+                                </f:facet>
+                                <h:outputText value="#{item.typeid.servicetype}"/>
+                            </p:column>
+                            <p:column   styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="收免费"/>
+                                </f:facet>
+                                <h:outputText value="#{item.isfree}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.status}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>                      
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton id="menuOperate" value="操作" style="float: right">  
+                                    <p:menuitem  id="btnView" actionListener="#{serviceManagedBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                                    <p:menuitem id="btnEdit" actionListener="#{serviceManagedBean.edit(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                rendered="#{item.status=='N' or item.status=='M'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                    <p:menuitem id="btnDelete" actionListener="#{serviceManagedBean.delete(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}"       
+                                                rendered="#{item.status=='N' or item.status=='M'}"  update=":formList" onclick="doConfirm();"/>                 
+                                </p:menuButton>  
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="Service Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="plgNew" columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="服务单号" for="serviceid" />
+                                <h:outputText id="serviceid" value="#{serviceManagedBean.newService.serviceid}" title="Serviceid" />
+                                <h:outputLabel value="客户" for="customerid" />
+                                <p:autoComplete id="customerid" value="#{serviceManagedBean.newService.customerid}" completeMethod="#{customerQueryBean.autoCompleteCustomers}"  
+                                                var="c" itemLabel="#{c.customer}" itemValue="#{c}" converter="customerConverter" forceSelection="true"
+                                                required="true" requiredMessage="The Customerid field is required."/>  
+                                <h:outputLabel value="#{i18n.status}" for="status" />
+                                <h:outputText id="status" value="#{serviceManagedBean.newService.status}" title="Status" />  
+                                <h:outputLabel value="服务日期" for="servicedate" />
+                                <p:calendar id="servicedate" value="#{serviceManagedBean.newService.servicedate}" title="Servicedate"  pattern="yyyy/MM/dd"
+                                            required="true" requiredMessage="The Servicedate field is required."/>       
+                                <h:outputLabel value="部门" for="deptid" />
+                                <p:autoComplete id="deptid" value="#{serviceManagedBean.newService.deptid}" completeMethod="#{departmentQueryBean.autoCompleteDepartments}"  
+                                                var="d" itemLabel="#{d.dept}" itemValue="#{d}" converter="departmentConverter"  forceSelection="true" 
+                                                required="true" requiredMessage="The Deptid field is required."/>  
+                                <h:outputLabel value="区域" for="areaid" />
+                                <p:inputText id="areaid" value="#{serviceManagedBean.newService.areaid}" title="Areaid" required="true" requiredMessage="The Areaid field is required."/>
+                                <h:outputLabel value="服务类别" for="kindid" />
+                                <p:selectOneMenu id="kindid" value="#{serviceManagedBean.newService.kindid}"  converter="serviceKindConverter"
+                                                 required="true" requiredMessage="The Kindid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.serviceKindList}" var="k" itemLabel="#{k.servicekind}" itemValue="#{k}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="服务方式" for="typeid" />
+                                <p:selectOneMenu id="typeid" value="#{serviceManagedBean.newService.typeid}"  converter="serviceTypeConverter"
+                                                 required="true" requiredMessage="The Typeid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.serviceTypeList}" var="t" itemLabel="#{t.servicetype}" itemValue="#{t}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="收费免费" for="isfree" />
+                                <p:inputText id="isfree" value="#{serviceManagedBean.newService.isfree}" title="Isfree" required="true" requiredMessage="The Isfree field is required."/>                               
+                                <h:outputLabel value="来源单号" for="sourceid" />
+                                <p:columnGroup>
+                                    <p:inputText id="sourceid" value="#{serviceManagedBean.newService.sourceid}" title="Sourceid" />                      
+                                    <p:commandButton id="btnInitComplaint"  actionListener="#{serviceManagedBean.initComplaint(serviceManagedBean.newService.customerid)}" 
+                                                     icon="ui-icon-search" oncomplete="viewComplaintDialog.show()" update=":formComplaintView" />  
+                                </p:columnGroup>    
+                                <h:outputLabel value="单据日期" for="sourcedate" />
+                                <p:inputText id="sourcedate" value="#{serviceManagedBean.newService.sourcedate}" title="Sourcedate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </p:inputText>
+                                <h:outputLabel value="来源客户" for="sourcecustomerid" />
+                                <p:inputText id="sourcecustomerid" value="#{serviceManagedBean.newService.sourcecustomerid}" title="Customerid" />
+                                <h:outputLabel value="联系人" for="contacter" />
+                                <p:inputText id="contacter" value="#{serviceManagedBean.newService.contacter}" title="Contacter" />
+                                <h:outputLabel value="电话" for="tel" />
+                                <p:inputText id="tel" value="#{serviceManagedBean.newService.tel}" title="Tel" />
+                                <h:outputLabel value="地址" for="address" />
+                                <p:inputText id="address" value="#{serviceManagedBean.newService.address}" title="Address" />                       
+                                <h:outputLabel value="最终客户" for="finallycust" />
+                                <p:inputText id="finallycust" value="#{serviceManagedBean.newService.finallycust}" title="Finallycust" />
+                                <h:outputLabel value="备注" for="remark" />
+                                <p:inputText id="remark" value="#{serviceManagedBean.newService.remark}" title="Remark" />
+                                <h:outputText value="#{i18n.creator}" />         
+                                <h:outputText id="creator" value="#{serviceManagedBean.newService.creator.name}" title="Creator" />    
+                                <h:outputText value="#{i18n.credate}" />     
+                                <h:outputText id="credate" value="#{serviceManagedBean.newService.credate}" title="Credate" >   
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>        
+                                <h:outputText value="#{i18n.optuser}"/>
+                                <h:outputText id="optuser" value="#{serviceManagedBean.newService.optuser.name}" title="Optuser" />
+                                <h:outputText value="#{i18n.optdate}" />
+                                <h:outputText id="optdate" value="#{serviceManagedBean.newService.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText id="cfmuser" value="#{serviceManagedBean.newService.cfmuser.name}" title="Cfmuser" />
+                                <h:outputText value="#{i18n.cfmdate}"/>
+                                <h:outputText id="cfmdate" value="#{serviceManagedBean.newService.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="结案人"  />
+                                <h:outputText id="auduser" value="#{serviceManagedBean.newService.auduser}" title="Auduser" />
+                                <h:outputText value="结案日" />
+                                <h:outputText id="auddate" value="#{serviceManagedBean.newService.auddate}" title="Auddate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{serviceManagedBean.persist()}" icon="ui-icon-disk" value="#{i18n.btnSave}" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList" />    
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Service Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid id="plgNew" columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputText value="服务单号"/>
+                                <h:outputText id="serviceid" value="#{serviceManagedBean.currentService.serviceid}" title="Serviceid" />
+                                <h:outputText value="服务日期"  />
+                                <h:outputText id="servicedate" value="#{serviceManagedBean.currentService.servicedate}" title="Servicedate">                    
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>                
+                                <h:outputText value="客户"  />
+                                <h:outputText id="customerid" value="#{serviceManagedBean.currentService.customerid.customer}" title="Customerid" />
+                                <h:outputLabel value="部门" for="deptid" />
+                                <p:autoComplete id="deptid" value="#{serviceManagedBean.currentService.deptid}" completeMethod="#{departmentQueryBean.autoCompleteDepartments}"  
+                                                var="d" itemLabel="#{d.dept}" itemValue="#{d}" converter="departmentConverter"  forceSelection="true" 
+                                                required="true" requiredMessage="The Deptid field is required."/>  
+                                <h:outputLabel value="区域" for="areaid" />
+                                <p:inputText id="areaid" value="#{serviceManagedBean.currentService.areaid}" title="Areaid" required="true" requiredMessage="The Areaid field is required."/>                  
+                                <h:outputText value="#{i18n.status}" />
+                                <h:outputText id="status" value="#{serviceManagedBean.currentService.status}" title="Status" />
+                                <h:outputLabel value="服务类别" for="kindid" />
+                                <p:selectOneMenu id="kindid" value="#{serviceManagedBean.currentService.kindid}"  converter="serviceKindConverter"
+                                                 required="true" requiredMessage="The Kindid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.serviceKindList}" var="k" itemLabel="#{k.servicekind}" itemValue="#{k}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="服务方式" for="typeid" />
+                                <p:selectOneMenu id="typeid" value="#{serviceManagedBean.currentService.typeid}"  converter="serviceTypeConverter"
+                                                 required="true" requiredMessage="The Typeid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{serviceManagedBean.serviceTypeList}" var="t" itemLabel="#{t.servicetype}" itemValue="#{t}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Isfree:" for="isfree" />
+                                <p:inputText id="isfree" value="#{serviceManagedBean.currentService.isfree}" title="Isfree" required="true" requiredMessage="The Isfree field is required."/>
+                                <h:outputLabel value="Provinceleave:" for="provinceleave" />
+                                <p:inputText id="provinceleave" value="#{serviceManagedBean.currentService.provinceleave}" title="Provinceleave" />
+                                <h:outputLabel value="Cityleave:" for="cityleave" />
+                                <p:inputText id="cityleave" value="#{serviceManagedBean.currentService.cityleave}" title="Cityleave" />
+                                <h:outputText value="来源单号" />
+                                <h:outputText id="sourceid" value="#{serviceManagedBean.currentService.sourceid}" title="Sourceid" />                            
+                                <h:outputLabel value="Provincearrive:" for="provincearrive" />
+                                <p:inputText id="provincearrive" value="#{serviceManagedBean.currentService.provincearrive}" title="Provincearrive" />
+                                <h:outputLabel value="Cityarrive:" for="cityarrive" />
+                                <p:inputText id="cityarrive" value="#{serviceManagedBean.currentService.cityarrive}" title="Cityarrive" />
+                                <h:outputText value="单据日期" />
+                                <h:outputText id="sourcedate" value="#{serviceManagedBean.currentService.sourcedate}" title="Sourcedate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="来源客户"/>
+                                <h:outputText id="sourcecustomerid" value="#{serviceManagedBean.currentService.sourcecustomerid}" title="Customerid" />
+                                <h:outputLabel value="联系人" for="contacter" />
+                                <p:inputText id="contacter" value="#{serviceManagedBean.currentService.contacter}" title="Contacter" />
+                                <h:outputLabel value="电话" for="tel" />
+                                <p:inputText id="tel" value="#{serviceManagedBean.currentService.tel}" title="Tel" />
+                                <h:outputLabel value="地址" for="address" />
+                                <p:inputText id="address" value="#{serviceManagedBean.currentService.address}" title="Address" />                       
+                                <h:outputLabel value="最终客户" for="finallycust" />
+                                <p:inputText id="finallycust" value="#{serviceManagedBean.currentService.finallycust}" title="Finallycust" />
+                                <h:outputLabel value="备注" for="remark" />
+                                <p:inputText id="remark" value="#{serviceManagedBean.currentService.remark}" title="Remark" />
+                                <h:outputText value="#{i18n.creator}"  />         
+                                <h:outputText id="creator" value="#{serviceManagedBean.currentService.creator.name}" title="Creator" />    
+                                <h:outputText value="#{i18n.credate}"  />     
+                                <h:outputText id="credate" value="#{serviceManagedBean.currentService.credate}" title="Credate" >   
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>        
+                                <h:outputText value="#{i18n.optuser}" />
+                                <h:outputText id="optuser" value="#{serviceManagedBean.currentService.optuser.name}" title="Optuser" />
+                                <h:outputText value="#{i18n.optdate}"  />
+                                <h:outputText id="optdate" value="#{serviceManagedBean.currentService.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.cfmuser}" />
+                                <h:outputText id="cfmuser" value="#{serviceManagedBean.currentService.cfmuser.name}" title="Cfmuser" />
+                                <h:outputText value="#{i18n.cfmdate}" />
+                                <h:outputText id="cfmdate" value="#{serviceManagedBean.currentService.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="结案人"/>
+                                <h:outputText id="auduser" value="#{serviceManagedBean.currentService.auduser}" title="Auduser" />
+                                <h:outputText value="结案日"/>
+                                <h:outputText id="auddate" value="#{serviceManagedBean.currentService.auddate}" title="Auddate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{serviceManagedBean.save()}" icon="ui-icon-disk" value="#{i18n.btnSave}" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ServiceDetail Info" widgetVar="viewDialog" modal="true"
+                                  onShow="doWhenFormViewShow(${serviceManagedBean.currentService.serviceDetailList.size()},0)" >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput" styleClass="plgHead"> 
+                                <h:outputText value="Serviceid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.serviceid}" title="Serviceid"/>
+                                <h:outputText value="Servicedate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.servicedate}" title="Servicedate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Customerid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.customerid.customer}" title="Customerid"/>
+                                <h:outputText value="Deptid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.deptid.dept}" title="Deptid"/>
+                                <h:outputText value="Areaid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.areaid}" title="Areaid"/>                              
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.status}" title="Status"/>
+                                <h:outputText value="Kindid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.kindid.servicekind}" title="Kindid"/>
+                                <h:outputText value="Typeid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.typeid.servicetype}" title="Typeid"/>
+                                <h:outputText value="Isfree:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.isfree}" title="Isfree"/>
+                                <h:outputText value="Provinceleave:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.provinceleave}" title="Provinceleave"/>
+                                <h:outputText value="Cityleave:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.cityleave}" title="Cityleave"/>
+                                <h:outputText value="Sourceid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.sourceid}" title="Sourceid"/>
+                                <h:outputText value="Provincearrive:"/>                    
+                                <h:outputText value="#{serviceManagedBean.currentService.provincearrive}" title="Provincearrive"/>
+                                <h:outputText value="Cityarrive:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.cityarrive}" title="Cityarrive"/>
+                                <h:outputText value="Sourcedate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.sourcedate}" title="Sourcedate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Sourcecustomerid:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.sourcecustomerid}" title="Sourcecustomerid"/>
+                                <h:outputText value="Contacter:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.contacter}" title="Contacter"/>
+                                <h:outputText value="Tel:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.tel}" title="Tel"/>
+                                <h:outputText value="Address:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.address}" title="Address"/>
+                                <h:outputText value="Finallycust:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.finallycust}" title="Finallycust"/>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.remark}" title="Remark"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.creator.name}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.optuser.name}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.cfmuser.name}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Auduser:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.auduser.name}" title="Auduser"/>
+                                <h:outputText value="Auddate:"/>
+                                <h:outputText value="#{serviceManagedBean.currentService.auddate}" title="Auddate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{serviceManagedBean.verify()}" icon="ui-icon-locked" value="#{i18n.btnVerify}" style="float: right" 
+                                                     rendered="#{serviceManagedBean.currentService.status!='V'}"   oncomplete="viewDialog.hide()" update=":formList" onclick="doConfirm();"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{serviceManagedBean.unverify()}" icon="ui-icon-unlocked" value="#{i18n.btnUnVerify}" style="float: right" 
+                                                     rendered="#{serviceManagedBean.currentService.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList" onclick="doConfirm();"/>
+                                </f:facet>
+                            </p:panelGrid>
+                            <p:tabView id="tabView" styleClass="tabview"> 
+                                <p:tab id="tab1" title="明细内容">
+                                    <p:dataTable id="tblList" value="#{serviceManagedBean.serviceDetails}" var="item" styleClass="tbllist">   
+                                        <f:facet name="header">
+                                            <p:commandButton id="btnCreateDetail" value="#{i18n.btnCreate}" actionListener="#{serviceManagedBean.createDetail()}" style="float: right" icon="ui-icon-plus"  
+                                                             rendered="#{serviceManagedBean.currentService.status=='N' or serviceManagedBean.currentService.status=='M'}" oncomplete="newDetailDialog.show();" update=":formNewDetail:dlgNewDetail"/>
+                                            <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                                        </f:facet>
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="Seq"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.seq}"/>
+                                        </p:column>
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="Itemno"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.itemno.itemdesc}"/>
+                                        </p:column>
+                                        <p:column styleClass="w100">
+                                            <f:facet name="header">
+                                                <h:outputText value="Sn"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.sn}"/>
+                                        </p:column>
+                                        <p:column  styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="Qty"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.qty}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Complaintcode"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.complaintcode.complaintname}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Serviceclass"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.serviceclass.serviceclass}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Servicecode"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.servicecode.servicename}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Do"/>
+                                            </f:facet>
+                                            <p:menuButton value="操作" style="float: right">  
+                                                <p:menuitem  id="btnViewDetail" actionListener="#{serviceManagedBean.viewDetail(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                             oncomplete="viewDetailDialog.show()" update=":formViewDetail:dlgViewDetail" />
+                                                <p:menuitem id="btnEditDetail" actionListener="#{serviceManagedBean.editDetail(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                            rendered="#{item.serviceid.status=='N' or item.serviceid.status=='M'}" oncomplete="editDetailDialog.show()" update=":formEditDetail:dlgEditDetail" />
+                                                <p:menuitem id="btnRemoveDeatail" actionListener="#{serviceManagedBean.removeDetail(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}"  
+                                                            rendered="#{item.serviceid.status=='N' or item.serviceid.status=='M'}" update=":formView:tabView:tblList"/>                 
+                                            </p:menuButton>  
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <p:commandButton id="btnPersistDetail" value="#{i18n.btnSave}" actionListener="#{serviceManagedBean.persistDetail()}" style="float: right" icon="ui-icon-disk" 
+                                                             rendered="#{serviceManagedBean.currentService.status=='N' or serviceManagedBean.currentService.status=='M'}"
+                                                             oncomplete="viewDialog.hide()" update=":formView:tabView:tblList"/>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:tab>
+                            </p:tabView>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formNewDetail">
+                        <p:dialog id="dlgNewDetail" header="ServiceDetail Info" widgetVar="newDetailDialog" modal="true">
+
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEditDetail">
+                        <p:dialog id="dlgEditDetail" header="ServiceDetail Info" widgetVar="editDetailDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput" styleClass="plgHead"> 
+                                <h:outputText value="Serviceid:"/>
+                                <h:outputText id="serviceid" value="#{serviceManagedBean.currentServiceDetail.serviceidd}" title="Serviceid" />
+                                <h:outputText value="Itemno:"  />
+                                <h:outputText id="itemno" value="#{serviceManagedBean.currentServiceDetail.itemno.itemdesc}" title="Itemno" />
+                                <h:outputText value="Qty:"  />
+                                <h:outputText id="qty" value="#{serviceManagedBean.currentServiceDetail.qty}" title="Qty" />                       
+                                <h:outputLabel value="Brand:" for="brand" />
+                                <p:inputText id="brand" value="#{serviceManagedBean.currentServiceDetail.brand}" title="Brand" />
+                                <h:outputLabel value="Batch:" for="batch" />
+                                <p:inputText id="batch" value="#{serviceManagedBean.currentServiceDetail.batch}" title="Batch" />
+                                <h:outputLabel value="Sn:" for="sn" />
+                                <p:inputText id="sn" value="#{serviceManagedBean.currentServiceDetail.sn}" title="Sn" />
+                                <h:outputLabel value="Runtime:" for="runtime" />
+                                <p:inputText id="runtime" value="#{serviceManagedBean.currentServiceDetail.runtime}" title="Runtime" />
+                                <h:outputText value="Isprotected:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.isprotected}" title="Isprotected"/>
+                                <h:outputText value="Responsible:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.responsible}" title="Responsible"/>
+                                <h:outputLabel value="Complaintclass:" for="complaintclass" />
+                                <p:selectOneMenu id="complaintclass" value="#{serviceManagedBean.currentServiceDetail.complaintclass}" converter="complaintClassConverter"
+                                                 required="true" requiredMessage="The Classid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{complaintManagedBean.complaintClassList}" var="cl" itemLabel="#{cl.complaintclass}" itemValue="#{cl}"/>
+                                    <p:ajax update="complaintcode" listener="#{serviceManagedBean.handleCurrComplaintClassChanged()}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Complaintcode:" for="complaintcode" />
+                                <p:selectOneMenu id="complaintcode" value="#{serviceManagedBean.currentServiceDetail.complaintcode}" converter="complaintCodeConverter"
+                                                 required="true" requiredMessage="The Complaintcode field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.complaintCodeList}" var="co" itemLabel="#{co.complaintname}" itemValue="#{co}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Serviceclass:" for="serviceclass" />
+                                <p:selectOneMenu id="serviceclass" value="#{serviceManagedBean.currentServiceDetail.serviceclass}" converter="serviceClassConverter"
+                                                 required="true" requiredMessage="The ServiceClass field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.serviceClassList}" var="sl" itemLabel="#{sl.serviceclass}" itemValue="#{sl}"/>
+                                    <p:ajax update="servicecode" listener="#{serviceManagedBean.handleCurrServiceClassChanged()}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Servicecode:" for="servicecode" />
+                                <p:selectOneMenu id="servicecode" value="#{serviceManagedBean.currentServiceDetail.servicecode}" converter="serviceCodeConverter"
+                                                 required="true" requiredMessage="The ServiceCode field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{serviceManagedBean.serviceCodeList}" var="so" itemLabel="#{so.servicename}" itemValue="#{so}"/>
+                                </p:selectOneMenu>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnUpdateDetail" value="#{i18n.btnOk}" actionListener="#{serviceManagedBean.updateDetail()}" style="float: right" icon="ui-icon-disk" 
+                                                     rendered="#{serviceManagedBean.currentService.status=='N' or serviceManagedBean.currentService.status=='M'}" 
+                                                     oncomplete="editDetailDialog.hide()" update=":formView:tabView:tblList" />
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formViewDetail">
+                        <p:dialog id="dlgViewDetail" header="ServiceDetail Info" widgetVar="viewDetailDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput" > 
+                                <h:outputText value="Serviceidd:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.serviceidd}" title="Serviceidd"/>
+                                <h:outputText value="Itemno:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.itemno.itemno}" title="Itemno"/>
+                                <h:outputText value="Itemdesc:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.itemno.itemdesc}" title="Itemdesc"/>
+                                <h:outputText value="Brand:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.brand}" title="Brand"/>
+                                <h:outputText value="Batch:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.batch}" title="Batch"/>
+                                <h:outputText value="Sn:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.sn}" title="Sn"/>
+                                <h:outputText value="Qty:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.qty}" title="Qty"/>
+                                <h:outputText value="Runtime:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.runtime}" title="Runtime"/>
+                                <h:outputText value="Isprotected:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.isprotected}" title="Isprotected"/>
+                                <h:outputText value="Responsible:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.responsible}" title="Responsible"/>                 
+                                <h:outputText value="Serviceclass:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.serviceclass.serviceclass}" title="Serviceclass"/>
+                                <h:outputText value="Servicecode:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.servicecode.servicename}" title="Servicecode"/>                 
+                                <h:outputText value="Sourceidd:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.sourceidd}" title="Sourceidd"/>        
+                                <h:outputText value="Complaintclass:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.complaintclass.complaintclass}" title="Complaintclass"/>
+                                <h:outputText value="Complaintcode:"/>
+                                <h:outputText value="#{serviceManagedBean.currentServiceDetail.complaintcode.complaintname}" title="Complaintcode"/>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formComplaintView">
+                        <p:dialog id="dlgComplaintView" header="ComplaintDetail Info" widgetVar="viewComplaintDialog" modal="true">
+                            <p:dataTable id="tblList" value="#{serviceManagedBean.complaintList}" var="c" styleClass="tbllist"
+                                         rowKey="#{c.complaintid}" selection="#{serviceManagedBean.currentComplaint}" selectionMode="single">  >
+                                <p:ajax event="rowSelect" listener="#{serviceManagedBean.handleComplaintSelect}"   
+                                        update=":formComplaintView:tabView:tblList"  />  
+                                <p:column styleClass="w100">
+                                    <f:facet name="header">
+                                        <h:outputText value="请求单号"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.complaintid}"/>
+                                </p:column>
+                                <p:column  styleClass="w080">
+                                    <f:facet name="header">
+                                        <h:outputText value="日期"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.complaintdate}">
+                                        <f:convertDateTime pattern="yyyy/MM/dd" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column   styleClass="w120">
+                                    <f:facet name="header">
+                                        <h:outputText value="客户"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.customerid.customer}"/>
+                                </p:column>
+                                <p:column  styleClass="w100">
+                                    <f:facet name="header">
+                                        <h:outputText value="处理部门"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.deptid.dept}"/>
+                                </p:column>
+                                <p:column  styleClass="w080">
+                                    <f:facet name="header">
+                                        <h:outputText value="区域"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.areaid}"/>
+                                </p:column>
+                                <p:column styleClass="w060">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{i18n.status}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{c.status}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:tabView id="tabView" styleClass="tabview"> 
+                                <p:tab id="tab1" title="明细内容">
+                                    <p:dataTable id="tblList" value="#{serviceManagedBean.complaintDetailList}" var="item" styleClass="tbllist">   
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="序号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.seq}"/>
+                                        </p:column>
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="产品"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.itemno.itemdesc}"/>
+                                        </p:column>
+                                        <p:column styleClass="w080">
+                                            <f:facet name="header">
+                                                <h:outputText value="序列号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.sn}"/>
+                                        </p:column>
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="数量"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.qty}"/>
+                                        </p:column>
+                                        <p:column styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="时数"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.runtime}"/>
+                                        </p:column>
+                                        <p:column   styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="保固"/>
+                                            </f:facet>
+                                            <p:selectBooleanCheckbox  value="#{item.isprotected}" disabled="true"/>
+                                        </p:column>
+                                        <p:column styleClass="w080">
+                                            <f:facet name="header">
+                                                <h:outputText value="责任"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.responsible}"/>
+                                        </p:column>
+                                        <p:column styleClass="w120">
+                                            <f:facet name="header">
+                                                <h:outputText value="类别"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.classid.complaintclass}"/>
+                                        </p:column>                         
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="内容"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.complaintcode.complaintname}"/>
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <p:commandButton id="btnAddDetailFromComplaint" value="#{i18n.btnOk}" actionListener="#{serviceManagedBean.handleNewServiceAddDetailFromComplaint()}" style="float: right" icon="ui-icon-disk" 
+                                                             rendered="#{serviceManagedBean.currentService.status=='N' or serviceManagedBean.currentService.status=='M'}"  
+                                                             oncomplete="viewComplaintDialog.hide()" update=":formNew:plgNew"/>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:tab>
+                            </p:tabView>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

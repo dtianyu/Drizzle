@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config version="2.1"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
+    
+    <application>
+        <resource-bundle>
+            <base-name>language</base-name>
+            <var>i18n</var>
+        </resource-bundle>
+        <locale-config>
+            <default-locale>zh_CN</default-locale>
+            <supported-locale>en_US</supported-locale>
+            <supported-locale>zh_TW</supported-locale>
+            <supported-locale>vi</supported-locale>
+        </locale-config>
+    </application>
+    <lifecycle>
+        <phase-listener>
+            cn.drizzle.web.LoginCheck
+        </phase-listener>
+    </lifecycle>
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>login</from-outcome>
+            <to-view-id>/login.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>  
+        <navigation-case>
+            <from-outcome>customer</from-outcome>
+            <to-view-id>/sd/customerList.xhtml</to-view-id>
+        </navigation-case>    
+        <navigation-case>
+            <from-outcome>complaintClass</from-outcome>
+            <to-view-id>/complaintClassList.xhtml</to-view-id>
+        </navigation-case>   
+                <navigation-case>
+            <from-outcome>complaint</from-outcome>
+            <to-view-id>/cs/complaintList.xhtml</to-view-id>
+        </navigation-case>   
+                <navigation-case>
+            <from-outcome>service</from-outcome>
+            <to-view-id>/cs/serviceList.xhtml</to-view-id>
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>deptTest</from-outcome>
+            <to-view-id>/deptTest.xhtml</to-view-id>
+        </navigation-case>                    
+    </navigation-rule>
+</faces-config>

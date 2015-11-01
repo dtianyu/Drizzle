@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="invmasList.js" target="head"></h:outputScript>
+                        <p:growl id="growl"  showDetail="true" autoUpdate="true"  /> 
+                        <p:panelGrid columns="4" styleClass="plgQuery">
+                            <f:facet name="header">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{invclsQueryBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList" oncomplete="resetFilter();"/>
+                            </f:facet>                   
+                            <h:outputLabel value="#{i18n.itemno}" for="itemno" />
+                            <p:inputText id="itemno" value="#{invclsQueryBean.filter1}" title="ItemNo" />
+                            <h:outputLabel value="#{i18n.itemdesc}" for="itemdesc" />
+                            <p:inputText id="itemdesc" value="#{invclsQueryBean.filter2}" title="ItemDesc" />
+                        </p:panelGrid>   
+                        <p:dataTable value="#{invclsQueryBean.model}" var="item" styleClass="tbllist"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45" lazy="true" >
+                            <p:column styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Itcls"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itcls}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="Itdsc"/>
+                                </f:facet>
+                                <h:outputText value="#{item.clsdsc}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="Itclscode"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itclscode}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton value="#{i18n.btnOperate}" style="float: right">  
+                                    <p:menuitem id="btnView" actionListener="#{invclsQueryBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                oncomplete="viewDialog.show()" update=":formView:dlgView"/>                                              
+                                </p:menuButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ItemMaster Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLabel,plgInput,plgLabel,plgInput">  
+                                <h:outputText value="Itcls:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.itcls}" title="Itcls"/>
+                                <h:outputText value="Clsdsc:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.clsdsc}" title="Clsdsc"/>
+                                <h:outputText value="Itnbrcode:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.itnbrcode}" title="Itnbrcode"/>
+                                <h:outputText value="Nrcode:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.nrcode}" title="Nrcode"/>
+                                <h:outputText value="Gpitdscyn:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gpitdscyn}" title="Gpitdscyn"/>
+                                <h:outputText value="Gpspdscyn:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gpspdscyn}" title="Gpspdscyn"/>
+                                <h:outputText value="Fixdsc:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.fixdsc}" title="Fixdsc"/>
+                                <h:outputText value="Fixdscf:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.fixdscf}" title="Fixdscf"/>
+                                <h:outputText value="Vardsc:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.vardsc}" title="Vardsc"/>
+                                <h:outputText value="Itclscode:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.itclscode}" title="Itclscode"/>
+                                <h:outputText value="Gcheck:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gcheck}" title="Gcheck"/>
+                                <h:outputText value="Gitnbr:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gitnbr}" title="Gitnbr"/>
+                                <h:outputText value="Grdescyn:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdescyn}" title="Grdescyn"/>
+                                <h:outputText value="Grdescitem:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdescitem}" title="Grdescitem"/>
+                                <h:outputText value="Gitdsc:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gitdsc}" title="Gitdsc"/>
+                                <h:outputText value="Gspdsc:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.gspdsc}" title="Gspdsc"/>
+                                <h:outputText value="Grdesc1:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc1}" title="Grdesc1"/>
+                                <h:outputText value="Grdesc2:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc2}" title="Grdesc2"/>
+                                <h:outputText value="Grdesc3:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc3}" title="Grdesc3"/>
+                                <h:outputText value="Grdesc4:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc4}" title="Grdesc4"/>
+                                <h:outputText value="Grdesc5:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc5}" title="Grdesc5"/>
+                                <h:outputText value="Grdesc6:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc6}" title="Grdesc6"/>
+                                <h:outputText value="Grdesc7:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc7}" title="Grdesc7"/>
+                                <h:outputText value="Grdesc8:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc8}" title="Grdesc8"/>
+                                <h:outputText value="Grdesc9:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc9}" title="Grdesc9"/>
+                                <h:outputText value="Grdesc10:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc10}" title="Grdesc10"/>
+                                <h:outputText value="Grdesc11:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc11}" title="Grdesc11"/>
+                                <h:outputText value="Grdesc12:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.grdesc12}" title="Grdesc12"/>
+                                <h:outputText value="Jityn:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.jityn}" title="Jityn"/>
+                                <h:outputText value="Mainteyn:"/>
+                                <h:outputText value="#{invclsQueryBean.currentEntity.mainteyn}" title="Mainteyn"/>
+
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

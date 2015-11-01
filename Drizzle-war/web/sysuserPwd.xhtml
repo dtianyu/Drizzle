@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <h:form id="formEdit">
+                    <p:growl id="growl" showDetail="true" autoUpdate="true" sticky="true"/>                 
+                    <p:panelGrid columns="2" columnClasses="plgLable,plgInput" styleClass="plgQuery">
+                        <h:outputText value="账户"/>
+                        <h:outputText value="#{userManagedBean.currentUser.userid}" title="账户"/>        
+                        <h:outputText value="名字"/>
+                        <h:outputText value="#{userManagedBean.currentUser.name}" title="名字"/>       
+                        <h:outputLabel value="密码" for="pwd" />
+                        <p:password id="pwd" value="#{userManagedBean.pwd}" title="Pwd"  feedback="false"
+                                    match="pwd2" redisplay="true" required="true" requiredMessage="The Pwd field is required."/>
+                        <h:outputLabel value="确认密码" for="pwd2" />
+                        <p:password id="pwd2" value="#{userManagedBean.pwd}" title="Pwd"  feedback="false"
+                                    redisplay="true" required="true" requiredMessage="The Pwd field is required." validatorMessage="两次密码不同"/>   
+                        <f:facet name="footer">
+                            <p:commandButton id="btnSave" action="#{userManagedBean.updatePwd()}"  icon="ui-icon-disk" value="保存" 
+                                             style="float: right"  update=":formEdit" />
+                        </f:facet> 
+                    </p:panelGrid>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

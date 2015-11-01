@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="invmasList.js" target="head"></h:outputScript>
+                        <p:growl id="growl"  showDetail="true" autoUpdate="true"  /> 
+                        <p:panelGrid columns="4" styleClass="plgQuery">
+                            <f:facet name="header">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{invmasQueryBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList" oncomplete="resetFilter();"/>
+                            </f:facet>                   
+                            <h:outputLabel value="#{i18n.itemno}" for="itemno" />
+                            <p:inputText id="itemno" value="#{invmasQueryBean.filter1}" title="ItemNo" />
+                            <h:outputLabel value="#{i18n.itemdesc}" for="itemdesc" />
+                            <p:inputText id="itemdesc" value="#{invmasQueryBean.filter2}" title="ItemDesc" />
+                        </p:panelGrid>   
+                        <p:dataTable value="#{invmasQueryBean.model}" var="item" styleClass="tbllist"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45" lazy="true" >
+                            <p:column styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Itnbr"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itnbr}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="Itclscode"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itclscode}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="Itdsc"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itdsc}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="Unmsr1"/>
+                                </f:facet>
+                                <h:outputText value="#{item.unmsr1}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Itcls"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itcls.itcls}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton value="#{i18n.btnOperate}" style="float: right">  
+                                    <p:menuitem id="btnView" actionListener="#{invmasQueryBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                oncomplete="viewDialog.show()" update=":formView:dlgView"/>                                              
+                                </p:menuButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ItemMaster Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLabel,plgInput,plgLabel,plgInput">  
+                                <h:outputText value="Itcls:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itcls.itcls}" title="Itcls"/>
+                                <h:outputText value="Itclsdsc:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itcls.clsdsc}" title="Itclsdsc"/>
+                                <h:outputText value="Itclscode:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itclscode}" title="Itclscode"/>                          
+                                <h:outputText value="Itnbr:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itnbr}" title="Itnbr"/>
+                                <h:outputText value="Itdsc:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itdsc}" title="Itdsc"/>
+                                <h:outputText value="Spdsc:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.spdsc}" title="Spdsc"/>
+                                <h:outputText value="Eitdsc:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.eitdsc}" title="Eitdsc"/>
+                                <h:outputText value="Espdsc:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.espdsc}" title="Espdsc"/>
+                                <h:outputText value="Purtrtype:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.purtrtype}" title="Purtrtype"/>
+                                <h:outputText value="Unmsr1:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.unmsr1}" title="Unmsr1"/>             
+                                <h:outputText value="Group1:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group1}" title="Group1"/>                       
+                                <h:outputText value="Group2:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group2}" title="Group2"/>      
+                                <h:outputText value="Unmsr2:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.unmsr2}" title="Unmsr2"/>
+                                <h:outputText value="Group3:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group3}" title="Group3"/>    
+                                <h:outputText value="Group4:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group4}" title="Group4"/>            
+                                <h:outputText value="Unmsr1e:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.unmsr1e}" title="Unmsr1e"/>
+                                <h:outputText value="Group5:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group5}" title="Group5"/>
+                                <h:outputText value="Group6:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group6}" title="Group6"/>              
+                                <h:outputText value="Unmsr2e:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.unmsr2e}" title="Unmsr2e"/>
+                                <h:outputText value="Group7:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group7}" title="Group7"/>
+                                <h:outputText value="Group8:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group8}" title="Group8"/>
+                                <h:outputText value="Rate2:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.rate2}" title="Rate2"/>
+                                <h:outputText value="Group9:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group9}" title="Group9"/>
+                                <h:outputText value="Group10:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group10}" title="Group10"/>           
+                                <h:outputText value="Morpcode:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.morpcode}" title="Morpcode"/>
+                                <h:outputText value="Group11:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group11}" title="Group11"/>
+                                <h:outputText value="Group12:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.group12}" title="Group12"/>
+                                <h:outputText value="Pocode:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.pocode}" title="Pocode"/>
+                                <h:outputText value="Dirrvyn:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.dirrvyn}" title="Dirrvyn"/>
+                                <h:outputText value="Barcode:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.barcode}" title="Barcode"/>
+                                <h:outputText value="Itdsc2:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.itdsc2}" title="Itdsc2"/>
+                                <h:outputText value="Spdsc2:"/>
+                                <h:outputText value="#{invmasQueryBean.currentEntity.spdsc2}" title="Spdsc2"/>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

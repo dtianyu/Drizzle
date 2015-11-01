@@ -1,0 +1,103 @@
+html,body{
+    height: 100%;   
+    margin: 0px;
+    padding: 0px;
+}
+
+#container {
+    min-height:100%;
+    height: auto!important;
+    height: 100%;
+}
+
+#center{
+    width: 980px;
+    margin: auto;
+    padding-bottom: 45px;
+}
+
+#bottom {
+    position: relative;
+    margin-top: -40px;
+    height: 40px; 
+    background-image: url("../img/bg-footer1.png");
+    color: white;
+    text-align: center;
+    clear: both ;  
+}
+
+#top {
+    position: relative;
+    margin: 0px 0px 10px 0px;
+}
+
+#top a:link, #top a:visited {
+    color: white;
+    font-weight : bold;
+    text-decoration: none;
+}
+
+#top a:link:hover, #top a:visited:hover  {
+    color: black;
+    font-weight : bold;
+    text-decoration : underline;
+}
+
+#topInfo{
+    width: 980px;
+    margin: auto; 
+    height: 25px;
+
+}
+
+#topAdv{
+    height: 80px;
+}
+
+#topNav{
+    height: 45px;
+    margin: 0px 0px 10px 0px;
+    background: -webkit-linear-gradient(top, #595C64, #1B1B1C);
+    background: -moz-linear-gradient(top, #595C64, #1B1B1C);
+    background: -o-linear-gradient(top, #595C64, #1B1B1C);
+    background: -ms-linear-gradient(top, #595C64, #1B1B1C);
+    background: linear-gradient(top, #595C64, #1B1B1C);
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #666;
+
+}
+
+#left {
+    float: left;
+    width: 150px;
+    margin:  0px 10px 40px 0;
+}
+
+#right{
+    float: left;
+    margin: 0px 0px 40px 0;
+}
+
+.notificationBar{
+    width: 350px;
+    height: 220px;
+    right: 0px;
+    bottom: 5px;
+    border: #045491 solid 2px;
+}
+
+.notificationBar a{
+    width: 22px;
+    height: 24px;
+    float: right; 
+    background :url("../img/sprites.png");
+    background-position: -107px -25px;
+}
+
+.notificationBar a:hover{
+    width: 22px;
+    height: 24px;
+    float: right; 
+    background :url("../img/sprites.png");
+    background-position: -107px 0px;
+}

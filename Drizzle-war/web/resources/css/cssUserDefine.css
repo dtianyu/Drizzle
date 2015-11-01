@@ -1,0 +1,191 @@
+/* 
+    Document   : columnsCSS
+    Created on : 2012-11-1, 11:29:59
+    Author     : C0160
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+/*button{
+    color: buttonhighlight;
+    height: 22px;
+}*/
+
+button span{
+    font-size:10px;
+}
+
+.loginOrLogout{
+    background-color: orange;  
+    float: right;
+}
+
+.currentUserLable,.currentUserName,.currentCompanyLable,.currentCompanyName{
+    border: none;
+    color: orange;
+    font-weight: bold; 
+    float: right;
+    padding: 5px;
+}
+
+/*用户登录框*/
+#loginDailog{
+    height: 230px;
+    width: 400px;
+    margin: auto;
+    background-color:black;
+    color:white;
+}
+
+form .btnLogin{
+    height: 35px;
+    width: 400px;
+    text-align: center;
+    background-color: #ff6666;
+}
+form .btnLogin span{
+    font-size: 14px;
+}
+
+form .plglogin{
+    width: 400px;
+    margin-top: 100px;
+    background: transparent none repeat 0% 0%;
+}
+
+form .plglogin tr{
+    height: 65px;
+    border:none;
+    background-color: transparent;
+}
+
+form .plglogin td{
+    border: none;
+}
+
+.plgLoginLabel{
+    width: 100px;
+    text-align: right;
+}
+
+.plgLoginTnput input{
+    width: 200px;
+}
+
+/*用户登录框*/
+
+
+/*设定表头panelGrid*/
+form .plgHead{
+    margin: 0 0 20px 0;
+    width: 820px;
+}
+
+form .plgHead tr{
+
+}
+
+form .plgHead td{
+
+}
+/*设定表头panelGrid*/
+
+/*设定查询条件panelGrid*/
+form .plgQuery{
+    margin: 0 0 20px 0;
+    width: 820px;
+}
+
+form .plgQuery tr{
+    border: none; 
+}
+
+form .plgQuery td{
+    border: none; 
+}
+/*设定查询条件panelGrid*/
+
+/*设定panelGrid中Column的宽度,配合columnClasses使用*/
+form .plgLable{
+    width: 60px;
+    text-align: right;
+}
+
+form .plgInput {
+    width: 220px;
+}
+/*设定panelGrid中Column的宽度,配合columnClasses使用*/
+
+form .tbllist{
+    margin: auto;
+    width: 820px;
+}
+
+
+table .height030{
+    height: 30px;
+}
+
+/*.tabview .tbllist{
+    margin: 5px auto;
+    width: 920px;
+}*/
+
+/*.formToolbar{
+    width: 1200px;
+    margin: auto;
+}*/
+
+.ui-datatable-header {
+    height: 22px;
+    font-size: 12px;
+}
+
+.ui-datatable-footer  {
+    height: 22px;
+    font-size: 12px;
+}
+
+/*.ui-menubar{
+     height: 25px;
+}
+
+.ui-menuitem{
+    height: 22px;
+}*/
+
+/*panelGrid*/
+.ui-panelgrid  tr {
+    height:  30px;
+}
+
+.ui-panelgrid-header {
+    font-size: 12px;
+}
+
+.ui-panelgrid-footer{
+    font-size: 12px;
+}
+
+.ui-panelmenu{
+    font-size: 10px;
+}
+
+/*下拉选择框*/
+.ui-selectonemenu{
+    height: 22px;
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,316 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="syscsList.js" target="head"></h:outputScript>
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable id="tbllist" value="#{syscsManagedBean.syscsList}" var="item"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist">
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{syscsManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.companycode}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.companyid.companycode}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="合约识别"/>
+                                </f:facet>
+                                <h:outputText value="#{item.contractidcode}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="客诉识别"/>
+                                </f:facet>
+                                <h:outputText value="#{item.complaintidcode}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="服务识别"/>
+                                </f:facet>
+                                <h:outputText value="#{item.serviceidcode}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{syscsManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{syscsManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{syscsManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{syscsManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>  
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="SC Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="panNew" columns="6"  columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Contractidcode:" for="contractidcode" />
+                                <p:inputText id="contractidcode" value="#{syscsManagedBean.newSyscs.contractidcode}" title="Contractidcode" required="true" requiredMessage="The Contractidcode field is required.">
+                                    <f:validateLength  minimum="1" maximum="4"/>
+                                </p:inputText>
+                                <h:outputLabel value="Contractidformat:" for="contractidformat" />
+                                <p:outputPanel>
+                                    <p:inputText id="contractidformat" value="#{syscsManagedBean.newSyscs.contractidformat}" title="Contractidformat" 
+                                                 onblur="checkDateFormatSetting('formNew', 'contractidformat');" required="true" requiredMessage="The Contractidformat field is required."/>
+                                </p:outputPanel>
+                                <h:outputLabel value="Contractidlen:" for="contractidlen" />
+                                <p:inputText id="contractidlen" value="#{syscsManagedBean.newSyscs.contractidlen}" title="Contractidlen" required="true" requiredMessage="The Contractidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputLabel value="Complaintidcode:" for="complaintidcode" />
+                                <p:inputText id="complaintidcode" value="#{syscsManagedBean.newSyscs.complaintidcode}" title="Complaintidcode" required="true" requiredMessage="The Complaintidcode field is required."/>
+                                <h:outputLabel value="Complaintidformat:" for="complaintidformat" />
+                                <p:inputText id="complaintidformat" value="#{syscsManagedBean.newSyscs.complaintidformat}" title="Complaiintidformat" 
+                                             onblur="checkDateFormatSetting('formNew', 'complaintidformat');" required="true" requiredMessage="The Complaiintidformat field is required."/>
+                                <h:outputLabel value="Complaintidlen:" for="complaintidlen" />
+                                <p:inputText id="complaintidlen" value="#{syscsManagedBean.newSyscs.complaintidlen}" title="Complaintidlen" required="true" requiredMessage="The Complaintidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputLabel value="Serviceidcode:" for="serviceidcode" />
+                                <p:inputText id="serviceidcode" value="#{syscsManagedBean.newSyscs.serviceidcode}" title="Serviceidcode" required="true" requiredMessage="The Serviceidcode field is required."/>
+                                <h:outputLabel value="Serviceidformat:" for="serviceidformat" />
+                                <p:inputText id="serviceidformat" value="#{syscsManagedBean.newSyscs.serviceidformat}" title="Serviceidformat" 
+                                             onblur="checkDateFormatSetting('formNew', 'serviceidformat');" required="true" requiredMessage="The Serviceidformat field is required."/>
+                                <h:outputLabel value="Serviceidlen:" for="serviceidlen" />
+                                <p:inputText id="serviceidlen" value="#{syscsManagedBean.newSyscs.serviceidlen}" title="Serviceidlen" required="true" requiredMessage="The Serviceidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{syscsManagedBean.newSyscs.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{syscsManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                    <p:commandButton value="提示" onclick="noteDialog.show()" type="button" icon="ui-icon-comment"  style="float: left"/>  
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="SC Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputText value="Companycode:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.companyid.companycode}" title="Companycode"/>
+                                <h:outputText value="Companyid:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.companyid.company}" title="Companyid"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.status}" title="Status"/>
+                                <h:outputLabel value="Contractidcode:" for="contractidcode" />
+                                <p:inputText id="contractidcode" value="#{syscsManagedBean.currentSyscs.contractidcode}" title="Contractidcode" required="true" requiredMessage="The Contractidcode field is required.">
+                                    <f:validateLength  minimum="1" maximum="4"/>
+                                </p:inputText>
+                                <h:outputLabel value="Contractidformat:" for="contractidformat" />
+                                <p:inputText id="contractidformat" value="#{syscsManagedBean.currentSyscs.contractidformat}" title="Contractidformat" 
+                                             onblur="checkDateFormatSetting('formEdit', 'contractidformat');"  required="true" requiredMessage="The Contractidformat field is required.">
+                                </p:inputText>
+                                <h:outputLabel value="Contractidlen:" for="contractidlen" />
+                                <p:inputText id="contractidlen" value="#{syscsManagedBean.currentSyscs.contractidlen}" title="Contractidlen" required="true" requiredMessage="The Contractidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputLabel value="Complaintidcode:" for="complaintidcode" />
+                                <p:inputText id="complaintidcode" value="#{syscsManagedBean.currentSyscs.complaintidcode}" title="Complaintidcode" required="true" requiredMessage="The Complaintidcode field is required."/>
+                                <h:outputLabel value="Complaiintidformat:" for="complaintidformat" />
+                                <p:inputText id="complaintidformat" value="#{syscsManagedBean.currentSyscs.complaintidformat}" title="Complaiintidformat" 
+                                             onblur="checkDateFormatSetting('formEdit', 'complaintidformat');" required="true" requiredMessage="The Complaiintidformat field is required."/>
+                                <h:outputLabel value="Complaintidlen:" for="complaintidlen" />
+                                <p:inputText id="complaintidlen" value="#{syscsManagedBean.currentSyscs.complaintidlen}" title="Complaintidlen" required="true" requiredMessage="The Complaintidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputLabel value="Serviceidcode:" for="serviceidcode" />
+                                <p:inputText id="serviceidcode" value="#{syscsManagedBean.currentSyscs.serviceidcode}" title="Serviceidcode" required="true" requiredMessage="The Serviceidcode field is required."/>
+                                <h:outputLabel value="Serviceidformat:" for="serviceidformat" />
+                                <p:inputText id="serviceidformat" value="#{syscsManagedBean.currentSyscs.serviceidformat}" title="Serviceidformat" 
+                                             onblur="checkDateFormatSetting('formEdit', 'serviceidformat');" required="true" requiredMessage="The Serviceidformat field is required."/>
+                                <h:outputLabel value="Serviceidlen:" for="serviceidlen" />
+                                <p:inputText id="serviceidlen" value="#{syscsManagedBean.currentSyscs.serviceidlen}" title="Serviceidlen" required="true" requiredMessage="The Serviceidlen field is required.">
+                                    <f:validateLongRange minimum="2" maximum="8"/>
+                                </p:inputText>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{syscsManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                    <p:commandButton value="提示" onclick="noteDialog.show()" type="button" icon="ui-icon-comment"  style="float: left"/>  
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="SC Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput"> 
+                                <h:outputText value="Companycode:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.companyid.companycode}" title="Companycode"/>
+                                <h:outputText value="Companyid:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.companyid.company}" title="Companyid"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.status}" title="Status"/>
+                                <h:outputText value="Contractidcode:"/>                          
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.contractidcode}" title="Contractidcode"/>
+                                <h:outputText value="Contractidformat:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.contractidformat}" title="Contractidformat"/>
+                                <h:outputText value="Contractidlen:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.contractidlen}" title="Contractidlen"/>
+                                <h:outputText value="Complaintidcode:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.complaintidcode}" title="Complaintidcode"/>
+                                <h:outputText value="Complaintidformat:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.complaintidformat}" title="Complaintidformat"/>
+                                <h:outputText value="Complaintidlen:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.complaintidlen}" title="Complaintidlen"/>
+                                <h:outputText value="Serviceidcode:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.serviceidcode}" title="Serviceidcode"/>
+                                <h:outputText value="Serviceidformat:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.serviceidformat}" title="Serviceidformat"/>
+                                <h:outputText value="Serviceidlen:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.serviceidlen}" title="Serviceidlen"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{syscsManagedBean.currentSyscs.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{syscsManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{syscsManagedBean.currentSyscs.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{syscsManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{syscsManagedBean.currentSyscs.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form>
+                        <p:dialog id="dlgNote" header="SC Info" widgetVar="noteDialog" modal="true">
+                            <p:panelGrid>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="C"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Year, formatted as two digits with leading zero as necessary, i.e. 00 - 99."/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="Y"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Year, formatted as at least four digits with leading zeros as necessary, e.g. 0092 for the Gregorian calendar.."/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="y"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Year, formatted as last two digits with leading zeros as necessary, i.e. 00 - 99."/>
+                                    </p:column>two digits
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="j"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Day of year, formatted as three digits with leading zeros as necessary, e.g. 001 - 366 for the Gregorian calendar."/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="m"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Month, formatted as two digits with leading zeros as necessary, i.e. 01 - 13."/>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="d"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Day of month, formatted as two digits with leading zeros as necessary, i.e. 01 - 31."/>
+                                    </p:column>
+                                </p:row>    
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText  value="e"/>
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText  value="Day of month, formatted as two digits, i.e. 1 - 31. "/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

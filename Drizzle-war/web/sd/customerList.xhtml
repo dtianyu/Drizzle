@@ -1,0 +1,368 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="../template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg" autoUpdate="true" closable="true" /> 
+                        <p:dataTable id="tbllist" value="#{customerManagedBean.customers}" var="item"  paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{customerManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.customerid}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.customerid}"/>
+                            </p:column>
+                            <p:column styleClass="companyName">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.customer}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.customer}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.simplecode}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.simplecode}"/>
+                            </p:column>
+                            <p:column  styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Tel"/>
+                                </f:facet>
+                                <h:outputText value="#{item.tel}"/>
+                            </p:column>
+                            <p:column  styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Fax"/>
+                                </f:facet>
+                                <h:outputText value="#{item.fax}"/>
+                            </p:column>
+                            <p:column  styleClass="bizCode">
+                                <f:facet name="header">
+                                    <h:outputText value="Grade"/>
+                                </f:facet>
+                                <h:outputText value="#{item.grade}"/>
+                            </p:column>
+                            <p:column  styleClass="bizId">
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{customerManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status !='V'}"  update=":formList"/>                 
+                                <p:commandButton id="btnEdit" actionListener="#{customerManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status !='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                <p:commandButton id="btnView" actionListener="#{customerManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{customerManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>  
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="User Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="panNew" columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Customerid:" for="customerid" />
+                                <p:inputText id="customerid" value="#{customerManagedBean.newCustomer.customerid}" title="Customerid" required="true" requiredMessage="The Customerid field is required."/>
+                                <h:outputLabel value="Customer:" for="customer" />
+                                <p:inputText id="customer" value="#{customerManagedBean.newCustomer.customer}" title="Customer" required="true" requiredMessage="The Customer field is required."/>
+                                <h:outputLabel value="Fullname:" for="fullname" />
+                                <p:inputText id="fullname" value="#{customerManagedBean.newCustomer.fullname}" title="Fullname" />
+                                <h:outputLabel value="Simplecode:" for="simplecode" />
+                                <p:inputText id="simplecode" value="#{customerManagedBean.newCustomer.simplecode}" title="Simplecode" required="true" requiredMessage="The Simplecode field is required."/>
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{customerManagedBean.newCustomer.tel}" title="Tel" />
+                                <h:outputLabel value="Fax:" for="fax" />
+                                <p:inputText id="fax" value="#{customerManagedBean.newCustomer.fax}" title="Fax" />
+                                <h:outputLabel value="Tel2:" for="tel2" />
+                                <p:inputText id="tel2" value="#{customerManagedBean.newCustomer.tel2}" title="Tel2" />
+                                <h:outputLabel value="Fax2:" for="fax2" />
+                                <p:inputText id="fax2" value="#{customerManagedBean.newCustomer.fax2}" title="Fax2" />
+                                <h:outputLabel value="Contacter:" for="contacter" />
+                                <p:inputText id="contacter" value="#{customerManagedBean.newCustomer.contacter}" title="Contacter" />
+                                <h:outputLabel value="Contactadd:" for="contactadd" />
+                                <p:inputText id="contactadd" value="#{customerManagedBean.newCustomer.contactadd}" title="Contactadd" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{customerManagedBean.newCustomer.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Country:" for="country" />
+                                <p:inputText id="country" value="#{customerManagedBean.newCustomer.country}" title="Country" />
+                                <h:outputLabel value="Area:" for="area" />
+                                <p:inputText id="area" value="#{customerManagedBean.newCustomer.area}" title="Area" />
+                                <h:outputLabel value="City:" for="city" />
+                                <p:inputText id="city" value="#{customerManagedBean.newCustomer.city}" title="City" />
+                                <h:outputLabel value="Salerid:" for="salerid" />
+                                <p:inputText id="salerid" value="#{customerManagedBean.newCustomer.salerid}" title="Salerid" converter="userConverter"/>
+                                <h:outputLabel value="Deptid:" for="deptid" />
+                                <p:inputText id="deptid" value="#{customerManagedBean.newCustomer.deptid}" title="Deptid" />
+                                <h:outputLabel value="Pricingtype:" for="pricingtype" />
+                                <p:inputText id="pricingtype" value="#{customerManagedBean.newCustomer.pricingtype}" title="Pricingtype" />
+                                <h:outputLabel value="Currency:" for="currency" />
+                                <p:inputText id="currency" value="#{customerManagedBean.newCustomer.currency}" title="Currency" required="true" requiredMessage="The Currency field is required."/>
+                                <h:outputLabel value="Taxtype:" for="taxtype" />
+                                <p:inputText id="taxtype" value="#{customerManagedBean.newCustomer.taxtype}" title="Taxtype" required="true" requiredMessage="The Taxtype field is required."/>
+                                <h:outputLabel value="Taxkind:" for="taxkind" />
+                                <p:inputText id="taxkind" value="#{customerManagedBean.newCustomer.taxkind}" title="Taxkind" />
+                                <h:outputLabel value="Taxrate:" for="taxrate" />
+                                <p:inputText id="taxrate" value="#{customerManagedBean.newCustomer.taxrate}" title="Taxrate" required="true" requiredMessage="The Taxrate field is required."/>
+                                <h:outputLabel value="Tradetype:" for="tradetype" />
+                                <p:inputText id="tradetype" value="#{customerManagedBean.newCustomer.tradetype}" title="Tradetype" required="true" requiredMessage="The Tradetype field is required."/>
+                                <h:outputLabel value="Paymentid:" for="paymentid" />
+                                <p:inputText id="paymentid" value="#{customerManagedBean.newCustomer.paymentid}" title="Paymentid" />
+                                <h:outputLabel value="Shipadd:" for="shipadd" />
+                                <p:inputText id="shipadd" value="#{customerManagedBean.newCustomer.shipadd}" title="Shipadd" />
+                                <h:outputLabel value="Grade:" for="grade" />
+                                <p:inputText id="grade" value="#{customerManagedBean.newCustomer.grade}" title="Grade" />
+                                <h:outputLabel value="Industry:" for="industry" />
+                                <p:inputText id="industry" value="#{customerManagedBean.newCustomer.industry}" title="Industry" />
+                                <h:outputLabel value="Regaddress:" for="regaddress" />
+                                <p:inputText id="regaddress" value="#{customerManagedBean.newCustomer.regaddress}" title="Regaddress" />
+                                <h:outputLabel value="Regcapital:" for="regcapital" />
+                                <p:inputText id="regcapital" value="#{customerManagedBean.newCustomer.regcapital}" title="Regcapital" />
+                                <h:outputLabel value="Taxid:" for="taxid" />
+                                <p:inputText id="taxid" value="#{customerManagedBean.newCustomer.taxid}" title="Taxid" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{customerManagedBean.newCustomer.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{customerManagedBean.newCustomer.bankaccount}" title="Bankaccount" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{customerManagedBean.newCustomer.status}" title="Status"/>
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{customerManagedBean.newCustomer.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{customerManagedBean.newCustomer.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{customerManagedBean.newCustomer.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{customerManagedBean.newCustomer.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{customerManagedBean.newCustomer.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{customerManagedBean.newCustomer.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{customerManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="User Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Customerid:" for="customerid" />
+                                <p:inputText id="customerid" value="#{customerManagedBean.currentCustomer.customerid}" title="Customerid" required="true" requiredMessage="The Customerid field is required."/>
+                                <h:outputLabel value="Customer:" for="customer" />
+                                <p:inputText id="customer" value="#{customerManagedBean.currentCustomer.customer}" title="Customer" required="true" requiredMessage="The Customer field is required."/>
+                                <h:outputLabel value="Fullname:" for="fullname" />
+                                <p:inputText id="fullname" value="#{customerManagedBean.currentCustomer.fullname}" title="Fullname" />
+                                <h:outputLabel value="Simplecode:" for="simplecode" />
+                                <p:inputText id="simplecode" value="#{customerManagedBean.currentCustomer.simplecode}" title="Simplecode" required="true" requiredMessage="The Simplecode field is required."/>
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{customerManagedBean.currentCustomer.tel}" title="Tel" />
+                                <h:outputLabel value="Fax:" for="fax" />
+                                <p:inputText id="fax" value="#{customerManagedBean.currentCustomer.fax}" title="Fax" />
+                                <h:outputLabel value="Tel2:" for="tel2" />
+                                <p:inputText id="tel2" value="#{customerManagedBean.currentCustomer.tel2}" title="Tel2" />
+                                <h:outputLabel value="Fax2:" for="fax2" />
+                                <p:inputText id="fax2" value="#{customerManagedBean.currentCustomer.fax2}" title="Fax2" />
+                                <h:outputLabel value="Contacter:" for="contacter" />
+                                <p:inputText id="contacter" value="#{customerManagedBean.currentCustomer.contacter}" title="Contacter" />
+                                <h:outputLabel value="Contactadd:" for="contactadd" />
+                                <p:inputText id="contactadd" value="#{customerManagedBean.currentCustomer.contactadd}" title="Contactadd" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{customerManagedBean.currentCustomer.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Country:" for="country" />
+                                <p:inputText id="country" value="#{customerManagedBean.currentCustomer.country}" title="Country" />
+                                <h:outputLabel value="Area:" for="area" />
+                                <p:inputText id="area" value="#{customerManagedBean.currentCustomer.area}" title="Area" />
+                                <h:outputLabel value="City:" for="city" />
+                                <p:inputText id="city" value="#{customerManagedBean.currentCustomer.city}" title="City" />
+                                <h:outputLabel value="Salerid:" for="salerid" />
+                                <p:inputText id="salerid" value="#{customerManagedBean.currentCustomer.salerid}" title="Salerid" converter="userConverter"/>
+                                <h:outputLabel value="Deptid:" for="deptid" />
+                                <p:inputText id="deptid" value="#{customerManagedBean.currentCustomer.deptid}" title="Deptid" />
+                                <h:outputLabel value="Pricingtype:" for="pricingtype" />
+                                <p:inputText id="pricingtype" value="#{customerManagedBean.currentCustomer.pricingtype}" title="Pricingtype" />
+                                <h:outputLabel value="Currency:" for="currency" />
+                                <p:inputText id="currency" value="#{customerManagedBean.currentCustomer.currency}" title="Currency" required="true" requiredMessage="The Currency field is required."/>
+                                <h:outputLabel value="Taxtype:" for="taxtype" />
+                                <p:inputText id="taxtype" value="#{customerManagedBean.currentCustomer.taxtype}" title="Taxtype" required="true" requiredMessage="The Taxtype field is required."/>
+                                <h:outputLabel value="Taxkind:" for="taxkind" />
+                                <p:inputText id="taxkind" value="#{customerManagedBean.currentCustomer.taxkind}" title="Taxkind" />
+                                <h:outputLabel value="Taxrate:" for="taxrate" />
+                                <p:inputText id="taxrate" value="#{customerManagedBean.currentCustomer.taxrate}" title="Taxrate" required="true" requiredMessage="The Taxrate field is required."/>
+                                <h:outputLabel value="Tradetype:" for="tradetype" />
+                                <p:inputText id="tradetype" value="#{customerManagedBean.currentCustomer.tradetype}" title="Tradetype" required="true" requiredMessage="The Tradetype field is required."/>
+                                <h:outputLabel value="Paymentid:" for="paymentid" />
+                                <p:inputText id="paymentid" value="#{customerManagedBean.currentCustomer.paymentid}" title="Paymentid" />
+                                <h:outputLabel value="Shipadd:" for="shipadd" />
+                                <p:inputText id="shipadd" value="#{customerManagedBean.currentCustomer.shipadd}" title="Shipadd" />
+                                <h:outputLabel value="Grade:" for="grade" />
+                                <p:inputText id="grade" value="#{customerManagedBean.currentCustomer.grade}" title="Grade" />
+                                <h:outputLabel value="Industry:" for="industry" />
+                                <p:inputText id="industry" value="#{customerManagedBean.currentCustomer.industry}" title="Industry" />
+                                <h:outputLabel value="Regaddress:" for="regaddress" />
+                                <p:inputText id="regaddress" value="#{customerManagedBean.currentCustomer.regaddress}" title="Regaddress" />
+                                <h:outputLabel value="Regcapital:" for="regcapital" />
+                                <p:inputText id="regcapital" value="#{customerManagedBean.currentCustomer.regcapital}" title="Regcapital" />
+                                <h:outputLabel value="Taxid:" for="taxid" />
+                                <p:inputText id="taxid" value="#{customerManagedBean.currentCustomer.taxid}" title="Taxid" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{customerManagedBean.currentCustomer.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{customerManagedBean.currentCustomer.bankaccount}" title="Bankaccount" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{customerManagedBean.newCustomer.status}" title="Status"/>
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{customerManagedBean.newCustomer.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{customerManagedBean.newCustomer.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{customerManagedBean.newCustomer.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{customerManagedBean.newCustomer.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{customerManagedBean.newCustomer.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{customerManagedBean.newCustomer.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{customerManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="User Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput"> 
+                                <h:outputText value="Customerid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.customerid}" title="Customerid"/>
+                                <h:outputText value="Customer:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.customer}" title="Customer"/>
+                                <h:outputText value="Fullname:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.fullname}" title="Fullname"/>
+                                <h:outputText value="Simplecode:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.simplecode}" title="Simplecode"/>
+                                <h:outputText value="Tel:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.tel}" title="Tel"/>
+                                <h:outputText value="Fax:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.fax}" title="Fax"/>
+                                <h:outputText value="Tel2:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.tel2}" title="Tel2"/>
+                                <h:outputText value="Fax2:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.fax2}" title="Fax2"/>
+                                <h:outputText value="Contacter:"  />
+                                <h:outputText id="contacter" value="#{customerManagedBean.currentCustomer.contacter}" title="Contacter" />
+                                <h:outputText value="Contactadd:" />
+                                <h:outputText id="contactadd" value="#{customerManagedBean.currentCustomer.contactadd}" title="Contactadd" />                    
+                                <h:outputText value="Zipcode:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.zipcode}" title="Zipcode"/>
+                                <h:outputText value="Country:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.country}" title="Country"/>
+                                <h:outputText value="Area:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.area}" title="Area"/>
+                                <h:outputText value="City:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.city}" title="City"/>
+                                <h:outputText value="Salerid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.salerid}" title="Salerid"/>
+                                <h:outputText value="Deptid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.deptid}" title="Deptid"/>
+                                <h:outputText value="Pricingtype:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.pricingtype}" title="Pricingtype"/>
+                                <h:outputText value="Currency:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.currency}" title="Currency"/>
+                                <h:outputText value="Taxtype:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.taxtype}" title="Taxtype"/>
+                                <h:outputText value="Taxkind:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.taxkind}" title="Taxkind"/>
+                                <h:outputText value="Taxrate:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.taxrate}" title="Taxrate"/>
+                                <h:outputText value="Tradetype:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.tradetype}" title="Tradetype"/>
+                                <h:outputText value="Paymentid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.paymentid}" title="Paymentid"/>
+                                <h:outputText value="Shipadd:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.shipadd}" title="Shipadd"/>
+                                <h:outputText value="Grade:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.grade}" title="Grade"/>
+                                <h:outputText value="Industry:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.industry}" title="Industry"/>
+                                <h:outputText value="Regaddress:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.regaddress}" title="Regaddress"/>
+                                <h:outputText value="Regcapital:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.regcapital}" title="Regcapital"/>
+                                <h:outputText value="Taxid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.taxid}" title="Taxid"/>
+                                <h:outputText value="Bankid:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.bankid}" title="Bankid"/>
+                                <h:outputText value="Bankaccount:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.bankaccount}" title="Bankaccount"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/ddy" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{customerManagedBean.currentCustomer.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{customerManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right" 
+                                                     rendered="#{customerManagedBean.currentCustomer.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{customerManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right" 
+                                                     rendered="#{customerManagedBean.currentCustomer.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+       
+        </ui:composition>
+
+    </body>
+</html>

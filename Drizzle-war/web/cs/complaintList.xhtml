@@ -1,0 +1,527 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezui">
+
+    <body>
+
+        <ui:composition template="../template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="complaintList.js" target="head"></h:outputScript>
+                        <p:messages id="msg"  showSummary="true" autoUpdate="true" closable="true" /> 
+                        <p:panelGrid columns="6" styleClass="plgQuery">
+                            <f:facet name="header">
+                                <p:commandButton id="btnLoad" value="#{i18n.btnRefresh}" actionListener="#{complaintManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-refresh"  update=":formList"/>
+                            </f:facet>                    
+                            <h:outputLabel value="DayBegin:" for="daybegin" />
+                            <p:calendar id="daybegin" value="#{complaintManagedBean.dayBegin}" title="Day" pattern="yyyy/MM/dd"
+                                        required="true" requiredMessage="The day field is required."/>
+                            <h:outputLabel value="DayEnd:" for="dayend" />
+                            <p:calendar id="dayend" value="#{complaintManagedBean.dayEnd}" title="Day" pattern="yyyy/MM/dd"
+                                        required="true" requiredMessage="The day field is required."/>
+                        </p:panelGrid>   
+                        <p:dataTable id="tblList" value="#{complaintManagedBean.complaints}" var="item"  paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="#{i18n.btnCreate}" actionListener="#{complaintManagedBean.create()}" process="@this"  style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"  />
+                                <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="请求单号"/>
+                                </f:facet>
+                                <h:outputText value="#{item.complaintid}"/>
+                            </p:column>
+                            <p:column  styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="日期"/>
+                                </f:facet>
+                                <h:outputText value="#{item.complaintdate}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column   styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="客户"/>
+                                </f:facet>
+                                <h:outputText value="#{item.customerid.customer}"/>
+                            </p:column>
+                            <p:column  styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="处理部门"/>
+                                </f:facet>
+                                <h:outputText value="#{item.deptid}"/>
+                            </p:column>
+                            <p:column  styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="区域"/>
+                                </f:facet>
+                                <h:outputText value="#{item.areaid}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.status}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton value="操作" style="float: right">  
+                                    <p:menuitem  id="btnView" actionListener="#{complaintManagedBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                                    <p:menuitem id="btnEdit" actionListener="#{complaintManagedBean.edit(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                rendered="#{item.status=='N' or item.status=='M'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                    <p:menuitem id="btnDelete" actionListener="#{complaintManagedBean.delete(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}"  
+                                                rendered="#{item.status=='N' or item.status=='M'}" update=":formList" onclick="confirm('Are You Sure?');"/>                 
+                                </p:menuButton>  
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="Complaint Info" widgetVar="newDialog" modal="false"  >
+                            <p:panelGrid  columns="6" columnClasses="plgLable,plgInput,plgLable,w300,plgLable,plgInput">
+                                <h:outputLabel value="请求单号" for="complaintid" />
+                                <h:outputText id="complaintid" value="#{complaintManagedBean.newComplaint.complaintid}" title="Complaintid" />
+                                <h:outputLabel value="请求日期" for="complaintdate" />
+                                <p:calendar id="complaintdate" value="#{complaintManagedBean.newComplaint.complaintdate}" title="Complaintdate"  pattern="yyyy/MM/dd"
+                                            required="true" requiredMessage="The Complaintdate field is required."/>       
+                                <h:outputLabel value="#{i18n.status}" for="status" />
+                                <h:outputText id="status" value="#{complaintManagedBean.newComplaint.status}" title="Status" />                       
+                                <h:outputLabel value="客户" for="customerid" />
+                                <p:autoComplete id="customerid" value="#{complaintManagedBean.newComplaint.customerid}" completeMethod="#{customerQueryBean.autoCompleteCustomers}"  
+                                                var="c" itemLabel="#{c.customer}" itemValue="#{c}" converter="customerConverter" forceSelection="true"
+                                                required="true" requiredMessage="The Customerid field is required.">
+                                    <p:ajax event="itemSelect" listener="#{complaintManagedBean.handleNewCustomerSelected}" update="contacter,tel,address" />                      
+                                </p:autoComplete>
+                                <h:outputLabel value="部门" for="dept" />
+                                <ez:inputDept id="dept" value="#{complaintManagedBean.newComplaint.deptid}" managedBean="#{departmentQueryBean}" 
+                                              display="" update="formNew:dept"  >                                 
+                                </ez:inputDept>             
+                                <h:outputLabel value="区域" for="areaid" />
+                                <p:inputText id="areaid" value="#{complaintManagedBean.newComplaint.areaid}" title="Areaid" required="true" requiredMessage="The Areaid field is required."/>
+                                <h:outputLabel value="联系人" for="contacter" />
+                                <p:inputText id="contacter" value="#{complaintManagedBean.newComplaint.contacter}" title="Contacter" />
+                                <h:outputLabel value="电话" for="tel" />
+                                <p:inputText id="tel" value="#{complaintManagedBean.newComplaint.tel}" title="Tel" />
+                                <h:outputLabel value="地址" for="address" />
+                                <p:inputText id="address" value="#{complaintManagedBean.newComplaint.address}" title="Address" />           
+                                <h:outputLabel value="最终客户" for="finallycust" />
+                                <p:inputText id="finallycust" value="#{complaintManagedBean.newComplaint.finallycust}" title="Finallycust" />
+                                <h:outputLabel value="备注" for="mark" />
+                                <p:inputText id="mark" value="#{complaintManagedBean.newComplaint.mark}" title="Mark" />
+                                <h:outputLabel value="#{i18n.creator}" for="creator" />         
+                                <h:outputText id="creator" value="#{complaintManagedBean.newComplaint.creator.name}" title="Creator" />    
+                                <h:outputLabel value="#{i18n.creator}" for="credate" />     
+                                <h:outputText id="credate" value="#{complaintManagedBean.newComplaint.credate}" title="Credate" >   
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>        
+                                <h:outputLabel value="#{i18n.optuser}" for="optuser" />
+                                <h:outputText id="optuser" value="#{complaintManagedBean.newComplaint.optuser.name}" title="Optuser" />
+                                <h:outputLabel value="#{i18n.optdate}" for="optdate" />
+                                <h:outputText id="optdate" value="#{complaintManagedBean.newComplaint.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.cfmuser}" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{complaintManagedBean.newComplaint.cfmuser.name}" title="Cfmuser" />
+                                <h:outputLabel value="#{i18n.cfmdate}" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{complaintManagedBean.newComplaint.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="结案人" for="auduser" />
+                                <h:outputText id="auduser" value="#{complaintManagedBean.newComplaint.auduser.name}" title="Auduser" />
+                                <h:outputLabel value="结案日" for="auddate" />
+                                <h:outputText id="auddate" value="#{complaintManagedBean.newComplaint.auddate}" title="Auddate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{complaintManagedBean.persist()}" icon="ui-icon-disk" value="#{i18n.btnSave}" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList" />    
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Complaint Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,w250,plgLable,plgInput">
+                                <h:outputLabel value="请求单号" for="complaintid" />
+                                <h:outputText id="complaintid" value="#{complaintManagedBean.currentComplaint.complaintid}" title="Complaintid" />
+                                <h:outputLabel value="请求日期" for="complaintdate" />                       
+                                <h:outputText  id="complaintdate" value="#{complaintManagedBean.currentComplaint.complaintdate}" title="Complaintdate"  >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.status}" for="status" />
+                                <h:outputText id="status" value="#{complaintManagedBean.currentComplaint.status}" title="Status" />                                      
+                                <h:outputLabel value="客户" for="customerid" />
+                                <p:autoComplete id="customerid" value="#{complaintManagedBean.currentComplaint.customerid}" completeMethod="#{customerQueryBean.autoCompleteCustomers}"  
+                                                var="c" itemLabel="#{c.customer}" itemValue="#{c}" converter="customerConverter" forceSelection="true"
+                                                required="true" requiredMessage="The Customerid field is required.">
+                                    <p:ajax event="itemSelect" listener="#{complaintManagedBean.handleCurrCustomerSelected}" update="contacter,tel,address" process="@this"/>                      
+                                </p:autoComplete>
+                                <h:outputLabel value="部门" for="dept" />
+                                <ez:inputDept id="dept" value="#{complaintManagedBean.currentComplaint.deptid}" managedBean="#{departmentQueryBean}" 
+                                              display="" update="formEdit:dept"  >                                 
+                                </ez:inputDept>   
+                                <h:outputLabel value="区域" for="areaid" />
+                                <p:inputText id="areaid" value="#{complaintManagedBean.currentComplaint.areaid}" title="Areaid" required="true" requiredMessage="The Areaid field is required."/>
+
+                                <h:outputLabel value="联系人" for="contacter" />
+                                <p:inputText id="contacter" value="#{complaintManagedBean.currentComplaint.contacter}" title="Contacter" />
+                                <h:outputLabel value="电话" for="tel" />
+                                <p:inputText id="tel" value="#{complaintManagedBean.currentComplaint.tel}" title="Tel" />
+                                <h:outputLabel value="地址" for="address" />
+                                <p:inputText id="address" value="#{complaintManagedBean.currentComplaint.address}" title="Address" />
+                                <h:outputLabel value="最终用户" for="finallycust" />
+                                <p:inputText id="finallycust" value="#{complaintManagedBean.currentComplaint.finallycust}" title="Finallycust" />
+                                <h:outputLabel value="备注" for="mark" />
+                                <p:inputText id="mark" value="#{complaintManagedBean.currentComplaint.mark}" title="Mark" />
+                                <h:outputLabel value="#{i18n.creator}" for="creator" />
+                                <h:outputText id="creator" value="#{complaintManagedBean.currentComplaint.creator.name}" title="Creator" />
+                                <h:outputLabel value="#{i18n.credate}" for="credate" />
+                                <h:outputText id="credate" value="#{complaintManagedBean.currentComplaint.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.optuser}" for="optuser" />
+                                <h:outputText id="optuser" value="#{complaintManagedBean.currentComplaint.optuser.name}" title="Optuser" />
+                                <h:outputLabel value="#{i18n.optdate}" for="optdate" />
+                                <h:outputText id="optdate" value="#{complaintManagedBean.currentComplaint.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.cfmuser}" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{complaintManagedBean.currentComplaint.cfmuser.name}" title="Cfmuser" />
+                                <h:outputLabel value="#{i18n.cfmdate}" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{complaintManagedBean.currentComplaint.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="结案人" for="auduser" />
+                                <h:outputText id="auduser" value="#{complaintManagedBean.currentComplaint.auduser.name}" title="Auduser" />
+                                <h:outputLabel value="结案日" for="auddate" />
+                                <h:outputText id="auddate" value="#{complaintManagedBean.currentComplaint.auddate}" title="Auddate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{complaintManagedBean.save()}" icon="ui-icon-disk" value="#{i18n.btnSave}" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ComplaintDetail Info" widgetVar="viewDialog" modal="true"  
+                                  onShow="doWhenFormViewShow(${complaintManagedBean.currentComplaint.complaintDetailList.size()},${complaintManagedBean.serviceDetailList.size()})" >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput" styleClass="plgHead"> 
+                                <h:outputText value="请求单号"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.complaintid}" title="Complaintid"/>
+                                <h:outputText value="请求日期"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.complaintdate}" title="Complaintdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText> 
+                                <h:outputText value="状态"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.status}" title="Status"/>
+                                <h:outputText value="客户"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.customerid.customer}" title="Customerid"/>
+                                <h:outputText value="处理部门"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.deptid}" title="Deptid"/>
+                                <h:outputText value="区域"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.areaid}" title="Areaid"/>
+                                <h:outputText value="联系人"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.contacter}" title="Contacter"/>
+                                <h:outputText value="电话"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.tel}" title="Tel"/>
+                                <h:outputText value="地址"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.address}" title="Address"/>
+                                <h:outputText value="最终客户"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.finallycust}" title="Finallycust"/>
+                                <h:outputText value="备注"/>
+                                <h:outputText value="#{complaintManagedBean.currentComplaint.mark}" title="Mark"/>
+                                <h:outputLabel value="#{i18n.creator}" for="creator" />
+                                <h:outputText id="creator" value="#{complaintManagedBean.currentComplaint.creator.name}" title="Creator" />
+                                <h:outputLabel value="#{i18n.credate}" for="credate" />
+                                <h:outputText id="credate" value="#{complaintManagedBean.currentComplaint.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.optuser}" for="optuser" />
+                                <h:outputText id="optuser" value="#{complaintManagedBean.currentComplaint.optuser.name}" title="Optuser" />
+                                <h:outputLabel value="#{i18n.optdate}" for="optdate" />
+                                <h:outputText id="optdate" value="#{complaintManagedBean.currentComplaint.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.cfmuser}" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{complaintManagedBean.currentComplaint.cfmuser.name}" title="Cfmuser" />
+                                <h:outputLabel value="#{i18n.cfmdate}" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{complaintManagedBean.currentComplaint.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="结案人" for="auduser" />
+                                <h:outputText id="auduser" value="#{complaintManagedBean.currentComplaint.auduser.name}" title="Auduser" />
+                                <h:outputLabel value="结案日" for="auddate" />
+                                <h:outputText id="auddate" value="#{complaintManagedBean.currentComplaint.auddate}" title="Auddate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{complaintManagedBean.verify()}" icon="ui-icon-locked" value="#{i18n.btnVerify}" style="float: right" 
+                                                     rendered="#{complaintManagedBean.currentComplaint.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList" />
+                                    <p:commandButton id="btnUnverify" actionListener="#{complaintManagedBean.unverify()}" icon="ui-icon-unlocked" value="#{i18n.btnUnVerify}" style="float: right" 
+                                                     rendered="#{complaintManagedBean.currentComplaint.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                            <p:tabView id="tabView" styleClass="tabview"> 
+                                <p:tab id="tab1" title="明细内容">
+                                    <p:dataTable id="tblList" value="#{complaintManagedBean.complaintDetails}" var="item" styleClass="tbllist">   
+                                        <f:facet name="header">
+                                            <p:commandButton id="btnCreateDetail" value="#{i18n.btnCreate}" actionListener="#{complaintManagedBean.createDetail()}" style="float: right" icon="ui-icon-plus"  
+                                                             rendered="#{complaintManagedBean.currentComplaint.status=='N' or complaintManagedBean.currentComplaint.status=='M'}" oncomplete="newDetailDialog.show();" update=":formNewDetail:dlgNewDetail"/>
+                                            <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                                        </f:facet>
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="序号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.seq}"/>
+                                        </p:column>
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="产品"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.itemno.itemdesc}"/>
+                                        </p:column>
+                                        <p:column styleClass="w120">
+                                            <f:facet name="header">
+                                                <h:outputText value="序列号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.sn}"/>
+                                        </p:column>
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="数量"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.qty}"/>
+                                        </p:column>
+                                        <p:column styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="时数"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.runtime}"/>
+                                        </p:column>
+                                        <p:column styleClass="w100">
+                                            <f:facet name="header">
+                                                <h:outputText value="类别"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.classid.complaintclass}"/>
+                                        </p:column>                         
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="内容"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.complaintcode.complaintname}"/>
+                                        </p:column>
+                                        <p:column   styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="保固"/>
+                                            </f:facet>
+                                            <p:selectBooleanCheckbox  value="#{item.isprotected}" disabled="true"/>
+                                        </p:column>
+                                        <p:column styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="责任"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.responsible}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Do"/>
+                                            </f:facet>
+                                            <p:menuButton value="操作" style="float: right">  
+                                                <p:menuitem  id="btnViewDetail" actionListener="#{complaintManagedBean.viewDetail(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                             oncomplete="viewDetailDialog.show()" update=":formViewDetail:dlgViewDetail" />
+                                                <p:menuitem id="btnEditDetail" actionListener="#{complaintManagedBean.editDetail(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                            rendered="#{item.complaintid.status=='N' or item.complaintid.status=='M'}" oncomplete="editDetailDialog.show()" update=":formEditDetail:dlgEditDetail" />
+                                                <p:menuitem id="btnRemoveDeatail" actionListener="#{complaintManagedBean.removeDetail(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}"  
+                                                            rendered="#{item.complaintid.status=='N' or item.complaintid.status=='M'}" update=":formView:tabView:tblList"/>                 
+                                            </p:menuButton>  
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <p:commandButton id="btnPersistDetail" value="#{i18n.btnSave}" actionListener="#{complaintManagedBean.persistDetail()}" style="float: right" icon="ui-icon-disk" 
+                                                             rendered="#{complaintManagedBean.currentComplaint.status=='N' or complaintManagedBean.currentComplaint.status=='M'}"  oncomplete="viewDialog.hide()"/>
+                                            <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab id="tab2" title="服务内容">
+                                    <p:dataTable id="tblList2" value="#{complaintManagedBean.serviceDetailList}" var="service" styleClass="tbllist">   
+                                        <f:facet name="header">
+                                            <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                                        </f:facet>
+                                        <p:column styleClass="w100">
+                                            <f:facet name="header">
+                                                <h:outputText value="服务单号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.serviceid.serviceid}"/>
+                                        </p:column>
+                                        <p:column styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="序号"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.seq}"/>
+                                        </p:column>
+                                        <p:column styleClass="w160">
+                                            <f:facet name="header">
+                                                <h:outputText value="Itemno"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.itemno.itemdesc}"/>
+                                        </p:column>
+                                        <p:column styleClass="w100">
+                                            <f:facet name="header">
+                                                <h:outputText value="Sn"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.sn}"/>
+                                        </p:column>
+                                        <p:column  styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="数量"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.qty}"/>
+                                        </p:column>
+                                        <p:column   styleClass="w040">
+                                            <f:facet name="header">
+                                                <h:outputText value="保固"/>
+                                            </f:facet>
+                                            <p:selectBooleanCheckbox  value="#{service.isprotected}" disabled="true"/>
+                                        </p:column>
+                                        <p:column styleClass="w060">
+                                            <f:facet name="header">
+                                                <h:outputText value="责任"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.responsible}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="服务类别"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.serviceclass.serviceclass}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="服务代码"/>
+                                            </f:facet>
+                                            <h:outputText value="#{service.servicecode.servicename}"/>
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:tab>
+                            </p:tabView>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formNewDetail">
+                        <p:dialog id="dlgNewDetail" header="ComplaintDetail Info" widgetVar="newDetailDialog" modal="true">
+                            <p:panelGrid  columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="产品" for="itemno" />
+                                <p:autoComplete id="itemno" value="#{complaintManagedBean.newComplaintDetail.itemno}" completeMethod="#{itemMasterQueryBean.autoCompleteItemMasters}"  
+                                                var="itemno" itemLabel="#{itemno.itemno}  #{itemno.itemdesc}" itemValue="#{itemno}" converter="itemMasterConverter" forceSelection="true"
+                                                required="true" requiredMessage="The Itemno field is required.">                     
+                                </p:autoComplete>
+                                <h:outputLabel value="品牌" for="brand" />
+                                <p:inputText id="brand" value="#{complaintManagedBean.newComplaintDetail.brand}" title="Brand" />
+                                <h:outputLabel value="批号" for="batch" />
+                                <p:inputText id="batch" value="#{complaintManagedBean.newComplaintDetail.batch}" title="Batch" />
+                                <h:outputLabel value="序列号" for="sn" />
+                                <p:inputText id="sn" value="#{complaintManagedBean.newComplaintDetail.sn}" title="Sn" />
+                                <h:outputLabel value="数量" for="qty" />
+                                <p:spinner id="qty" value="#{complaintManagedBean.newComplaintDetail.qty}" title="Qty" required="true" requiredMessage="The Qty field is required."/>
+                                <h:outputLabel value="使用时间" for="runtime" />
+                                <p:inputText id="runtime" value="#{complaintManagedBean.newComplaintDetail.runtime}" title="Runtime" />
+                                <h:outputLabel value="受保固" for="isprotected" />
+                                <p:selectBooleanCheckbox  id="isprotected" value="#{complaintManagedBean.newComplaintDetail.isprotected}" required="true"/>
+                                <h:outputLabel value="责任" for="responsible" />
+                                <p:inputText id="responsible" value="#{complaintManagedBean.newComplaintDetail.responsible}" title="Responsible" required="true" requiredMessage="The Responsible field is required."/>                         
+                                <h:outputLabel value="请求类别" for="classid" />
+                                <p:selectOneMenu id="classid" value="#{complaintManagedBean.newComplaintDetail.classid}"  converter="complaintClassConverter"
+                                                 required="true" requiredMessage="The Classid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{complaintManagedBean.complaintClassList}" var="cl" itemLabel="#{cl.complaintclass}" itemValue="#{cl}"/>
+                                    <p:ajax listener="#{complaintManagedBean.handleNewComplaintClassChanged()}" event="change" update="complaintcode" process="@this"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="请求代码" for="complaintcode" />
+                                <p:selectOneMenu id="complaintcode" value="#{complaintManagedBean.newComplaintDetail.complaintcode}" converter="complaintCodeConverter"
+                                                 required="true" requiredMessage="The Complaintcode field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{complaintManagedBean.complaintCodeList}" var="co" itemLabel="#{co.complaintname}" itemValue="#{co}"/>
+                                </p:selectOneMenu>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnAddDetail" actionListener="#{complaintManagedBean.addDetail()}" value="#{i18n.btnAdd}" style="float: right" icon="ui-icon-plus" 
+                                                     oncomplete="newDetailDialog.hide()"  update=":formView:tabView:tblList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>      
+                    <h:form id="formEditDetail">
+                        <p:dialog id="dlgEditDetail" header="ComplaintDetail Info" widgetVar="editDetailDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="产品" for="itemno" />
+                                <p:autoComplete id="itemno" value="#{complaintManagedBean.currentComplaintDetail.itemno}" completeMethod="#{itemMasterQueryBean.autoCompleteItemMasters}"  
+                                                var="itemno" itemLabel="#{itemno.itemno}  #{itemno.itemdesc}" itemValue="#{itemno}" converter="itemMasterConverter" forceSelection="true"
+                                                required="true" requiredMessage="The Itemno field is required.">                     
+                                </p:autoComplete>
+                                <h:outputLabel value="品牌" for="brand" />
+                                <p:inputText id="brand" value="#{complaintManagedBean.currentComplaintDetail.brand}" title="Brand" />
+                                <h:outputLabel value="批号" for="batch" />
+                                <p:inputText id="batch" value="#{complaintManagedBean.currentComplaintDetail.batch}" title="Batch" />
+                                <h:outputLabel value="序列号" for="sn" />
+                                <p:inputText id="sn" value="#{complaintManagedBean.currentComplaintDetail.sn}" title="Sn" />
+                                <h:outputLabel value="数量" for="qty" />
+                                <p:spinner id="qty" value="#{complaintManagedBean.currentComplaintDetail.qty}" title="Qty" required="true" requiredMessage="The Qty field is required."/>
+                                <h:outputLabel value="使用时间" for="runtime" />
+                                <p:inputText id="runtime" value="#{complaintManagedBean.currentComplaintDetail.runtime}" title="Runtime" />
+                                <h:outputLabel value="受保固" for="isprotected" />
+                                <p:selectBooleanCheckbox  id="isprotected" value="#{complaintManagedBean.currentComplaintDetail.isprotected}" />
+                                <h:outputLabel value="责任" for="responsible" />
+                                <p:inputText id="responsible" value="#{complaintManagedBean.currentComplaintDetail.responsible}" title="Responsible" required="true" requiredMessage="The Responsible field is required."/>                
+                                <h:outputLabel value="请求类别" for="classid" />
+                                <p:selectOneMenu id="classid" value="#{complaintManagedBean.currentComplaintDetail.classid}"  converter="complaintClassConverter"
+                                                 required="true" requiredMessage="The Classid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{complaintManagedBean.complaintClassList}" var="cl" itemLabel="#{cl.complaintclass}" itemValue="#{cl}"/>
+                                    <p:ajax listener="#{complaintManagedBean.handleCurrComplaintClassChanged()}" event="change"  update="complaintcode" process="@this"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="请求代码" for="complaintcode" />
+                                <p:selectOneMenu id="complaintcode" value="#{complaintManagedBean.currentComplaintDetail.complaintcode}" converter="complaintCodeConverter"
+                                                 required="true" requiredMessage="The Complaintcode field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{complaintManagedBean.complaintCodeList}" var="co" itemLabel="#{co.complaintname}" itemValue="#{co}"/>
+                                </p:selectOneMenu> 
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnUpdateDetail" actionListener="#{complaintManagedBean.updateDetail()}" value="更新" style="float: right" icon="ui-icon-refesh" 
+                                                     oncomplete="editDetailDialog.hide()"  update=":formView:tabView:tblList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formViewDetail">
+                        <p:dialog id="dlgViewDetail" header="ComplaintDetail Info" widgetVar="viewDetailDialog" modal="true">
+
+                        </p:dialog>
+                    </h:form>                 
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

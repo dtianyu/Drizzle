@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"></p:messages>
+                        <p:dataTable value="#{companyManagedBean.companies}" var="item" paginator="true"  paginatorPosition="bottom" rows="15"   
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{companyManagedBean.create()}" style="float: right" icon="ui-icon-plus" 
+                                                 oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.companycode}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.companycode}"/>
+                            </p:column>
+                            <p:column styleClass="companyName">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.company}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.company}"/>
+                            </p:column>
+                            <p:column styleClass="w040">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.simplecode}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.simplecode}"/>
+                            </p:column>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="Tel"/>
+                                </f:facet>
+                                <h:outputText value="#{item.tel}"/>
+                            </p:column>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="Fax"/>
+                                </f:facet>
+                                <h:outputText value="#{item.fax}"/>
+                            </p:column>               
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="Address"/>
+                                </f:facet>
+                                <h:outputText value="#{item.address}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{companyManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{companyManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show();" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{companyManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{companyManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="Company Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="4" columnClasses="plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Companycode:" for="companycode" />
+                                <p:inputText id="companycode" value="#{companyManagedBean.newCompany.companycode}" title="Companycode" required="true" requiredMessage="The Companycode field is required."/>
+                                <h:outputLabel value="Company:" for="company" />
+                                <p:inputText id="company" value="#{companyManagedBean.newCompany.company}" title="Company" required="true" requiredMessage="The Company field is required."/>
+                                <h:outputLabel value="Shortname:" for="shortname" />
+                                <p:inputText id="shortname" value="#{companyManagedBean.newCompany.shortname}" title="Shortname" />
+                                <h:outputLabel value="Company2:" for="company2" />
+                                <p:inputText id="company2" value="#{companyManagedBean.newCompany.company2}" title="Company2" />
+                                <h:outputLabel value="Shortname2:" for="shortname2" />
+                                <p:inputText id="shortname2" value="#{companyManagedBean.newCompany.shortname2}" title="Shortname2" />
+                                <h:outputLabel value="Simplecode:" for="simplecode" />
+                                <p:inputText id="simplecode" value="#{companyManagedBean.newCompany.simplecode}" title="Simplecode" required="true" requiredMessage="The Simplecode field is required."/>    
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{companyManagedBean.newCompany.tel}" title="Tel" />
+                                <h:outputLabel value="Fax:" for="fax" />
+                                <p:inputText id="fax" value="#{companyManagedBean.newCompany.fax}" title="Fax" />
+                                <h:outputLabel value="Address:" for="address" />
+                                <p:inputText id="address" value="#{companyManagedBean.newCompany.address}" title="Address" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{companyManagedBean.newCompany.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Currency:" for="currency" />
+                                <p:inputText id="currency" value="#{companyManagedBean.newCompany.currency}" title="Currency" />
+                                <h:outputLabel value="Regaddress:" for="regaddress" />
+                                <p:inputText id="regaddress" value="#{companyManagedBean.newCompany.regaddress}" title="Regaddress" />
+                                <h:outputLabel value="Taxid:" for="taxid" />
+                                <p:inputText id="taxid" value="#{companyManagedBean.newCompany.taxid}" title="Taxid" />
+                                <h:outputLabel value="Regcapital:" for="regcapital" />
+                                <p:inputText id="regcapital" value="#{companyManagedBean.newCompany.regcapital}" title="Regcapital" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{companyManagedBean.newCompany.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{companyManagedBean.newCompany.bankaccount}" title="Bankaccount" />
+                                <h:outputLabel value="Domain:" for="domain" />
+                                <p:inputText id="domain" value="#{companyManagedBean.newCompany.domain}" title="Domain" />
+                                <h:outputLabel value="Domainadmin:" for="domainadmin" />
+                                <p:inputText id="domainadmin" value="#{companyManagedBean.newCompany.domainadmin}" title="Domainadmin" />
+                                <h:outputLabel value="Domainpwd:" for="domainpwd" />
+                                <p:password id="domainpwd" value="#{companyManagedBean.newCompany.domainpwd}" title="Domainpwd" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{companyManagedBean.newCompany.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{companyManagedBean.newCompany.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{companyManagedBean.newCompany.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{companyManagedBean.newCompany.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{companyManagedBean.newCompany.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{companyManagedBean.newCompany.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{companyManagedBean.newCompany.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{companyManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Company Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="4" columnClasses="plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Companycode:" for="companycode" />
+                                <h:outputText id="companycode" value="#{companyManagedBean.currentCompany.companycode}" title="Companycode" />
+                                <h:outputLabel value="Company:" for="company" />
+                                <p:inputText id="company" value="#{companyManagedBean.currentCompany.company}" title="Company" required="true" requiredMessage="The Company field is required."/>
+                                <h:outputLabel value="Shortname:" for="shortname" />
+                                <p:inputText id="shortname" value="#{companyManagedBean.currentCompany.shortname}" title="Shortname" />
+                                <h:outputLabel value="Company2:" for="company2" />
+                                <p:inputText id="company2" value="#{companyManagedBean.currentCompany.company2}" title="Company2" />
+                                <h:outputLabel value="Shortname2:" for="shortname2" />
+                                <p:inputText id="shortname2" value="#{companyManagedBean.currentCompany.shortname2}" title="Shortname2" />  
+                                <h:outputLabel value="Simplecode:" for="simplecode" />
+                                <p:inputText id="simplecode" value="#{companyManagedBean.currentCompany.simplecode}" title="Simplecode" required="true" requiredMessage="The Simplecode field is required."/>
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{companyManagedBean.currentCompany.tel}" title="Tel" />
+                                <h:outputLabel value="Fax:" for="fax" />
+                                <p:inputText id="fax" value="#{companyManagedBean.currentCompany.fax}" title="Fax" />                 
+                                <h:outputLabel value="Address:" for="address" />
+                                <p:inputText id="address" value="#{companyManagedBean.currentCompany.address}" title="Address" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{companyManagedBean.currentCompany.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Currency:" for="currency" />
+                                <p:inputText id="currency" value="#{companyManagedBean.currentCompany.currency}" title="Currency" />
+                                <h:outputLabel value="Regaddress:" for="regaddress" />
+                                <p:inputText id="regaddress" value="#{companyManagedBean.currentCompany.regaddress}" title="Regaddress" />
+                                <h:outputLabel value="Taxid:" for="taxid" />
+                                <p:inputText id="taxid" value="#{companyManagedBean.currentCompany.taxid}" title="Taxid" />
+                                <h:outputLabel value="Regcapital:" for="regcapital" />
+                                <p:inputText id="regcapital" value="#{companyManagedBean.currentCompany.regcapital}" title="Regcapital" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{companyManagedBean.currentCompany.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{companyManagedBean.currentCompany.bankaccount}" title="Bankaccount" />
+                                <h:outputLabel value="Domain:" for="domain" />
+                                <p:inputText id="domain" value="#{companyManagedBean.currentCompany.domain}" title="Domain" />
+                                <h:outputLabel value="Domainadmin:" for="domainadmin" />
+                                <p:inputText id="domainadmin" value="#{companyManagedBean.currentCompany.domainadmin}" title="Domainadmin" />
+                                <h:outputLabel value="Domainpwd:" for="domainpwd" />
+                                <p:password id="domainpwd" value="#{companyManagedBean.currentCompany.domainpwd}" title="Domainpwd" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{companyManagedBean.currentCompany.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{companyManagedBean.currentCompany.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{companyManagedBean.currentCompany.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{companyManagedBean.currentCompany.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{companyManagedBean.currentCompany.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{companyManagedBean.currentCompany.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{companyManagedBean.currentCompany.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{companyManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="Company Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="4" columnClasses="plgLable,plgInput,plgLable,plgInput">
+                                <h:outputText value="Companycode:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.companycode}" title="Companycode"/>
+                                <h:outputText value="Company:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.company}" title="Company"/>
+                                <h:outputText value="Shortname:"/>
+                                <h:outputText id="shortname" value="#{companyManagedBean.currentCompany.shortname}" title="Shortname" />
+                                <h:outputText value="Company2:"  />
+                                <h:outputText id="company2" value="#{companyManagedBean.currentCompany.company2}" title="Company2" />
+                                <h:outputText value="Shortname2:" />
+                                <h:outputText id="shortname2" value="#{companyManagedBean.currentCompany.shortname2}" title="Shortname2" />  
+                                <h:outputText value="Simplecode:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.simplecode}" title="Simplecode"/>
+                                <h:outputText value="Tel:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.tel}" title="Tel"/>
+                                <h:outputText value="Fax:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.fax}" title="Fax"/>               
+                                <h:outputText value="Address:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.address}" title="Address"/>
+                                <h:outputText value="Zipcode:"/>
+                                <h:outputText id="zipcode" value="#{companyManagedBean.currentCompany.zipcode}" title="Zipcode" />
+                                <h:outputText value="Currency:"/>
+                                <h:outputText id="currency" value="#{companyManagedBean.currentCompany.currency}" title="Currency" />
+                                <h:outputText value="Regaddress:"  />
+                                <h:outputText id="regaddress" value="#{companyManagedBean.currentCompany.regaddress}" title="Regaddress" />
+                                <h:outputText value="Taxid:" />
+                                <h:outputText id="taxid" value="#{companyManagedBean.currentCompany.taxid}" title="Taxid" />
+                                <h:outputText value="Regcapital:"  />
+                                <h:outputText id="regcapital" value="#{companyManagedBean.currentCompany.regcapital}" title="Regcapital" />
+                                <h:outputText value="Bankid:" />
+                                <h:outputText id="bankid" value="#{companyManagedBean.currentCompany.bankid}" title="Bankid" />
+                                <h:outputText value="Bankaccount:"  />
+                                <h:outputText id="bankaccount" value="#{companyManagedBean.currentCompany.bankaccount}" title="Bankaccount" />
+                                <h:outputText value="Domain:" />
+                                <h:outputText id="domain" value="#{companyManagedBean.currentCompany.domain}" title="Domain" />
+                                <h:outputText value="Domainadmin:" />
+                                <h:outputText id="domainadmin" value="#{companyManagedBean.currentCompany.domainadmin}" title="Domainadmin" />
+                                <h:outputText value="Domainpwd:"  />
+                                <h:outputText id="domainpwd" value="#{companyManagedBean.currentCompany.domainpwd}" title="Domainpwd" />
+                                <h:outputText value="Status:"  />
+                                <h:outputText id="status" value="#{companyManagedBean.currentCompany.status}" title="Status" />
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd"/>
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{companyManagedBean.currentCompany.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{companyManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{companyManagedBean.currentCompany.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{companyManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{companyManagedBean.currentCompany.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

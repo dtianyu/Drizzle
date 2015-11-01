@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable value="#{itemClassManagedBean.itemClasses}" var="item" styleClass="tbllist"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="#{i18n.btnCreate}" actionListener="#{itemClassManagedBean.create()}" style="float: right"
+                                                 icon="ui-icon-plus"    oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Classid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.classid}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Classlevel"/>
+                                </f:facet>
+                                <p:selectOneMenu id="classlevel" value="#{item.classlevel}" disabled="true">
+                                    <f:selectItems value="#{itemClassLevelQueryBean.itemClassLevels}"  var="l"  itemLabel="#{l.name}" itemValue="#{l.id}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Classdesc"/>
+                                </f:facet>
+                                <h:outputText value="#{item.classdesc}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Property"/>
+                                </f:facet>
+                                <p:selectOneMenu id="property" value="#{item.property}" disabled="true" >
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu>  
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Maketype"/>
+                                </f:facet>
+                                <p:selectOneMenu id="maketype" value="#{item.maketype}" disabled="true">
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu>  
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Potype"/>
+                                </f:facet>
+                                <p:selectOneMenu id="potype"  value="#{item.potype}" disabled="true"  >
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Unittype"/>
+                                </f:facet>
+                                <p:selectOneMenu id="unittype" value="#{item.unittype}" disabled="true">
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton value="#{i18n.btnOperate}" style="float: right">  
+                                    <p:menuitem id="btnView" actionListener="#{itemClassManagedBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                oncomplete="viewDialog.show()" update=":formView:dlgView"/>                                 
+                                    <p:menuitem id="btnEdit" actionListener="#{itemClassManagedBean.edit(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>                                                     
+                                    <p:menuitem id="btnDelete" actionListener="#{itemClassManagedBean.delete(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}" 
+                                                rendered="#{item.status=='N' or item.status=='M'}" update=":formList"/>                  
+                                </p:menuButton>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="#{i18n.btnRefresh}" actionListener="#{itemClassManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">        
+                        <p:dialog id="dlgNew" header="ItemClass Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="4" columnClasses="plgLable,plgInput,plgLabel,plgInput">
+                                <h:outputLabel value="Classid:" for="classid" />
+                                <p:inputText id="classid" value="#{itemClassManagedBean.newItemClass.classid}" title="Classid" required="true" requiredMessage="The Classid field is required."/>
+                                <h:outputLabel value="Classdesc:" for="classdesc" />
+                                <p:inputText id="classdesc" value="#{itemClassManagedBean.newItemClass.classdesc}" title="Classdesc" required="true" requiredMessage="The Classdesc field is required."/>                    
+                                <h:outputLabel value="Classlevel:" for="classlevel" />
+                                <p:selectOneMenu id="classlevel" value="#{itemClassManagedBean.newItemClass.classlevel}"  required="true" requiredMessage="The Classlevel field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemClassLevelQueryBean.itemClassLevels}"  var="l"  itemLabel="#{l.name}" itemValue="#{l.id}" />
+                                    <p:ajax update="parent"  listener="#{itemClassManagedBean.handleNewItemClassLevelChanged()}" />  
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Property:" for="property" />
+                                <p:selectOneMenu id="property" value="#{itemClassManagedBean.newItemClass.property}"  required="true" requiredMessage="The Property field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Maketype:" for="maketype" />
+                                <p:selectOneMenu id="maketype" value="#{itemClassManagedBean.newItemClass.maketype}"  required="true" requiredMessage="The Maketype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Potype:" for="potype" />
+                                <p:selectOneMenu id="potype" value="#{itemClassManagedBean.newItemClass.potype}"  required="true" requiredMessage="The Potype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Unittype:" for="unittype" />
+                                <p:selectOneMenu id="unittype" value="#{itemClassManagedBean.newItemClass.unittype}"  required="true" requiredMessage="The Unittype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Autono:" for="autono" />
+                                <p:selectBooleanCheckbox id="autono" value="#{itemClassManagedBean.newItemClass.autono}" required="true" requiredMessage="The Autono field is required."/>  
+                                <h:outputLabel value="Invtype:" for="invtype" />
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemClassManagedBean.newItemClass.invtype}" required="true" requiredMessage="The Invtype field is required."/>  
+                                <h:outputLabel value="Bbstype:" for="bbstype" />
+                                <p:selectOneMenu id="bbstype" value="#{itemClassManagedBean.newItemClass.bbstype}"  required="true" requiredMessage="The Bbstype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu>    
+                                <h:outputLabel value="Parent:" for="parent" />
+                                <p:selectOneMenu id="parent" value="#{itemClassManagedBean.newItemClass.parent}">
+                                    <f:selectItem itemLabel="根类" itemValue="root" />  
+                                    <f:selectItems value="#{itemClassManagedBean.parentItemClasses}"  var="c"  itemLabel="#{c.classdesc}" itemValue="#{c.classid}" />
+                                </p:selectOneMenu>                                   
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{itemClassManagedBean.newItemClass.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{itemClassManagedBean.newItemClass.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{itemClassManagedBean.newItemClass.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{itemClassManagedBean.newItemClass.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{itemClassManagedBean.newItemClass.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{itemClassManagedBean.newItemClass.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{itemClassManagedBean.newItemClass.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{itemClassManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="ItemClass Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="4"  columnClasses="plgLable,plgInput,plgLabel,plgInput">
+                                <h:outputLabel value="Classid:" for="classid" />
+                                <h:outputText id="classid" value="#{itemClassManagedBean.currentItemClass.classid}" title="Classid"/>
+                                <h:outputLabel value="Classlevel:" for="classlevel" />
+                                <p:selectOneMenu id="classlevel" value="#{itemClassManagedBean.currentItemClass.classlevel}"  required="true" requiredMessage="The Classlevel field is required." >
+                                    <f:selectItems value="#{itemClassLevelQueryBean.itemClassLevels}"  var="l"  itemLabel="#{l.name}" itemValue="#{l.id}" />
+                                    <p:ajax update="parent"  listener="#{itemClassManagedBean.handleCurItemClassLevelChanged()}" />  
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Classdesc:" for="classdesc" />
+                                <p:inputText id="classdesc" value="#{itemClassManagedBean.currentItemClass.classdesc}" title="Classdesc" required="true" requiredMessage="The Classdesc field is required."/>
+                                <h:outputLabel value="Property:" for="property" />
+                                <p:selectOneMenu id="property" value="#{itemClassManagedBean.currentItemClass.property}"  required="true" requiredMessage="The Property field is required.">
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Maketype:" for="maketype" />
+                                <p:selectOneMenu id="maketype" value="#{itemClassManagedBean.currentItemClass.maketype}"  required="true" requiredMessage="The Maketype field is required.">
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Potype:" for="potype" />
+                                <p:selectOneMenu id="potype" value="#{itemClassManagedBean.currentItemClass.potype}"  required="true" requiredMessage="The Potype field is required.">
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Unittype:" for="unittype" />
+                                <p:selectOneMenu id="unittype" value="#{itemClassManagedBean.currentItemClass.unittype}"  required="true" requiredMessage="The Unittype field is required.">
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Autono:" for="autono" />
+                                <p:selectBooleanCheckbox id="autono" value="#{itemClassManagedBean.currentItemClass.autono}" required="true" requiredMessage="The Autono field is required."/>  
+                                <h:outputLabel value="Invtype:" for="invtype" />
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemClassManagedBean.currentItemClass.invtype}" required="true" requiredMessage="The Invtype field is required."/>  
+                                <h:outputLabel value="Bbstype:" for="bbstype" />
+                                <p:selectOneMenu id="bbstype" value="#{itemClassManagedBean.currentItemClass.bbstype}"  required="true" requiredMessage="The Bbstype field is required.">
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Parent:" for="parent" />
+                                <p:selectOneMenu id="parent" value="#{itemClassManagedBean.currentItemClass.parent}">
+                                    <f:selectItem itemLabel="根类" itemValue="root" />  
+                                    <f:selectItems value="#{itemClassManagedBean.parentItemClasses}"  var="c"  itemLabel="#{c.classdesc}" itemValue="#{c.classid}" />
+                                </p:selectOneMenu>    
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{itemClassManagedBean.currentItemClass.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{itemClassManagedBean.currentItemClass.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{itemClassManagedBean.currentItemClass.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{itemClassManagedBean.currentItemClass.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{itemClassManagedBean.currentItemClass.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{itemClassManagedBean.currentItemClass.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{itemClassManagedBean.currentItemClass.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{itemClassManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form> 
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ItemClass Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="4"  columnClasses="plgLable,plgInput,plgLabel,plgInput" >
+                                <h:outputText value="Classid:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.classid}" title="Classid"/>
+                                <h:outputText value="Classlevel:"/>
+                                <p:selectOneMenu id="classlevel" value="#{itemClassManagedBean.currentItemClass.classlevel}"  disabled="true" >
+                                    <f:selectItems value="#{itemClassLevelQueryBean.itemClassLevels}"  var="l"  itemLabel="#{l.name}" itemValue="#{l.id}" />
+                                </p:selectOneMenu>
+                                <h:outputText value="Classdesc:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.classdesc}" title="Classdesc"/>
+                                <h:outputText value="Property:"/>
+                                <p:selectOneMenu id="property" value="#{itemClassManagedBean.currentItemClass.property}"  disabled="true">
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputText value="Maketype:"/>
+                                <p:selectOneMenu id="maketype" value="#{itemClassManagedBean.currentItemClass.maketype}"  disabled="true">
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputText value="Potype:"/>
+                                <p:selectOneMenu id="potype" value="#{itemClassManagedBean.currentItemClass.potype}"  disabled="true">
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputText value="Unittype:"/>
+                                <p:selectOneMenu id="unittype" value="#{itemClassManagedBean.currentItemClass.unittype}" disabled="true">
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputText value="Autono:"/>
+                                <p:selectBooleanCheckbox id="autono" value="#{itemClassManagedBean.currentItemClass.autono}" disabled="true"/>
+                                <h:outputText value="Invtype:"/>
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemClassManagedBean.currentItemClass.invtype}" disabled="true"/>
+                                <h:outputText value="Bbstype:"/>
+                                <p:selectOneMenu id="bbstype" value="#{itemClassManagedBean.currentItemClass.bbstype}"  disabled="true">
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputText value="Parent:"/>
+                                <p:selectOneMenu id="parent" value="#{itemClassManagedBean.currentItemClass.parent}" disabled="true">
+                                    <f:selectItem itemLabel="根类" itemValue="root" />  
+                                    <f:selectItems value="#{itemClassManagedBean.parentItemClasses}"  var="c"  itemLabel="#{c.classdesc}" itemValue="#{c.classid}" />
+                                </p:selectOneMenu>  
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{itemClassManagedBean.currentItemClass.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{itemClassManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{itemClassManagedBean.currentItemClass.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{itemClassManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{itemClassManagedBean.currentItemClass.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

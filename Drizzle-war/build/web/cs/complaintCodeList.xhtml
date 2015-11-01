@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable id="tblList" value="#{complaintCodeManagedBean.complaintCodes}" var="item"  paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{complaintCodeManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.code}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.complaintcode}"/>
+                            </p:column>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.name}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.complaintname}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.classid}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.classid.classid}"/>
+                            </p:column>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.name}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.classid.complaintclass}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.status}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{complaintCodeManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                 
+                                <p:commandButton id="btnEdit" actionListener="#{complaintCodeManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                <p:commandButton id="btnView" actionListener="#{complaintCodeManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{complaintCodeManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>  
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="ComplaintCode Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="panNew" columns="2">
+                                <h:outputLabel value="#{i18n.code}" for="complaintcode" />
+                                <p:inputText id="complaintcode" value="#{complaintCodeManagedBean.newComplaintCode.complaintcode}" title="Complaintcode" required="true" requiredMessage="The Complaintcode field is required."/>
+                                <h:outputLabel value="#{i18n.name}" for="complaintname" />
+                                <p:inputText id="complaintname" value="#{complaintCodeManagedBean.newComplaintCode.complaintname}" title="Complaintname" required="true" requiredMessage="The Complaintname field is required."/>
+                                <h:outputLabel value="#{i18n.classid}" for="classid" />
+                                <p:selectOneMenu id="classid" value="#{complaintCodeManagedBean.newComplaintCode.classid}" converter="complaintClassConverter"
+                                                 required="true" requiredMessage="The Classid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One"  itemValue=""/>
+                                    <f:selectItems value="#{complaintClassQueryBean.complaintClassList}" var="c" itemLabel="#{c.complaintclass}" itemValue="#{c}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{complaintCodeManagedBean.newComplaintCode.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.status}" title="Status"/>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.creator}" title="Creator"/>
+                                <h:outputText value="#{i18n.credate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.optuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.optuser}" title="Optuser"/>
+                                <h:outputText value="#{i18n.optdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="#{i18n.cfmdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.newComplaintCode.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{complaintCodeManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="ComplaintCode Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="#{i18n.code}" for="complaintcode" />
+                                <h:outputText id="complaintcode" value="#{complaintCodeManagedBean.currentComplaintCode.complaintcode}" title="Complaintcode" />
+                                <h:outputLabel value="#{i18n.name}" for="complaintname" />
+                                <p:inputText id="complaintname" value="#{complaintCodeManagedBean.currentComplaintCode.complaintname}" title="Complaintname" required="true" requiredMessage="The Complaintname field is required."/>
+                                <h:outputLabel value="#{i18n.classid}" for="classid" />
+                                <p:selectOneMenu id="classid" value="#{complaintCodeManagedBean.currentComplaintCode.classid}" converter="complaintClassConverter"
+                                                 required="true" requiredMessage="The Classid field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{complaintClassQueryBean.complaintClassList}" var="c" itemLabel="#{c.complaintclass}" itemValue="#{c}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{complaintCodeManagedBean.currentComplaintCode.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.status}" title="Status"/>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.creator}" title="Creator"/>
+                                <h:outputText value="#{i18n.credate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.optuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.optuser}" title="Optuser"/>
+                                <h:outputText value="#{i18n.optdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="#{i18n.cfmdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{complaintCodeManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ComplaintCode Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput"> 
+                                <h:outputText value="#{i18n.code}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.complaintcode}" title="Complaintcode"/>
+                                <h:outputText value="#{i18n.name}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.complaintname}" title="Complaintname"/>
+                                <h:outputText value="#{i18n.classid}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.classid.classid}" title="Classid"/>
+                                <h:outputText value="#{i18n.name}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.classid.complaintclass}" title="ClassName"/>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.status}" title="Status"/>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.creator}" title="Creator"/>
+                                <h:outputText value="#{i18n.credate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.optuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.optuser}" title="Optuser"/>
+                                <h:outputText value="#{i18n.optdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.cfmuser}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="#{i18n.cfmdate}"/>
+                                <h:outputText value="#{complaintCodeManagedBean.currentComplaintCode.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{complaintCodeManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{complaintCodeManagedBean.currentComplaintCode.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{complaintCodeManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{complaintCodeManagedBean.currentComplaintCode.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

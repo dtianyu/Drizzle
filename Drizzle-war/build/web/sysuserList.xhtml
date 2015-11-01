@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable id="tbllist" value="#{sysuserManagedBean.sysusers}" var="item"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist">
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="#{i18n.btnCreate}" actionListener="#{sysuserManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.contentlist}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="Userid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.userid}"/>
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="Name"/>
+                                </f:facet>
+                                <h:outputText value="#{item.name}"/>
+                            </p:column>
+                            <p:column styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Sid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.sid}"/>
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="Tel"/>
+                                </f:facet>
+                                <h:outputText value="#{item.tel}"/>
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="Mobile"/>
+                                </f:facet>
+                                <h:outputText value="#{item.mobile}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="Mailadd"/>
+                                </f:facet>
+                                <h:outputText value="#{item.mailadd}"/>
+                            </p:column>
+                            <p:column styleClass="w040">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.status}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>           
+                                <p:menuButton value="#{i18n.btnOperate}" style="float: right">  
+                                    <p:menuitem  id="btnView" actionListener="#{sysuserManagedBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                                    <p:menuitem id="btnEdit" actionListener="#{sysuserManagedBean.edit(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                    <p:menuitem id="btnDelete" actionListener="#{sysuserManagedBean.delete(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}"  
+                                                rendered="#{item.status=='N' or item.status=='M'}" update=":formList"/>                 
+                                </p:menuButton>  
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="#{i18n.btnRefresh}" actionListener="#{sysuserManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>                            
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="User Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="panNew" columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Userid:" for="userid" />
+                                <p:inputText id="userid" value="#{sysuserManagedBean.newSysuser.userid}" title="Userid" required="true" requiredMessage="The Userid field is required."/>
+                                <h:outputLabel value="Name:" for="name" />
+                                <p:inputText id="name" value="#{sysuserManagedBean.newSysuser.name}" title="Name" required="true" requiredMessage="The Name field is required."/>
+                                <h:outputLabel value="Employeeid:" for="employeeid" />
+                                <p:inputText id="employeeid" value="#{sysuserManagedBean.newSysuser.employeeid}" title="Employeeid" />           
+                                <h:outputLabel value="Pwd:" for="pwd" />
+                                <p:password id="pwd" value="#{sysuserManagedBean.newSysuser.pwd}" title="Pwd"  feedback="false"
+                                            match="pwd2" redisplay="true" required="true" requiredMessage="The Pwd field is required."/>
+                                <h:outputLabel value="Pwd:" for="pwd2" />
+                                <p:password id="pwd2" value="#{sysuserManagedBean.newSysuser.pwd}" title="Pwd"  feedback="false"
+                                            redisplay="true" required="true" requiredMessage="The Pwd field is required."/>             
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.status}" title="Status"/>           
+                                <h:outputLabel value="Sid:" for="sid" />
+                                <p:inputText id="sid" value="#{sysuserManagedBean.newSysuser.sid}" title="Sid" />
+                                <h:outputLabel value="Sidpwd:" for="sidpwd" />
+                                <p:inputText id="sidpwd" value="#{sysuserManagedBean.newSysuser.sidpwd}" title="Sidpwd" />
+                                <h:outputLabel value="Ssoid:" for="ssoid" />
+                                <p:inputText id="ssoid" value="#{sysuserManagedBean.newSysuser.ssoid}" title="Ssoid" />
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{sysuserManagedBean.newSysuser.tel}" title="Tel" />
+                                <h:outputLabel value="Mobile:" for="mobile" />
+                                <p:inputText id="mobile" value="#{sysuserManagedBean.newSysuser.mobile}" title="Mobile" />     
+                                <h:outputLabel value="Mailadd:" for="mailadd" />
+                                <p:inputText id="mailadd" value="#{sysuserManagedBean.newSysuser.mailadd}" title="Mailadd" />                  
+                                <h:outputLabel value="Tel2:" for="tel2" />
+                                <p:inputText id="tel2" value="#{sysuserManagedBean.newSysuser.tel2}" title="Tel2" />
+                                <h:outputLabel value="Mobile2:" for="mobile2" />
+                                <p:inputText id="mobile2" value="#{sysuserManagedBean.newSysuser.mobile2}" title="Mobile2" />
+                                <h:outputLabel value="Mailadd2:" for="mailadd2" />
+                                <p:inputText id="mailadd2" value="#{sysuserManagedBean.newSysuser.mailadd2}" title="Mailadd2" />     
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.newSysuser.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{sysuserManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="User Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Userid:" for="userid" />
+                                <h:outputText id="userid" value="#{sysuserManagedBean.currentSysuser.userid}" title="Userid" />
+                                <h:outputLabel value="Name:" for="name" />
+                                <p:inputText id="name" value="#{sysuserManagedBean.currentSysuser.name}" title="Name" required="true" requiredMessage="The Name field is required."/>
+                                <h:outputLabel value="Employeeid:" for="employeeid" />
+                                <p:inputText id="employeeid" value="#{sysuserManagedBean.currentSysuser.employeeid}" title="Employeeid" />                         
+                                <h:outputLabel value="Pwd:" for="pwd" />
+                                <p:password id="pwd" value="#{sysuserManagedBean.currentSysuser.pwd}" title="Pwd"  feedback="false"
+                                            match="pwd2" redisplay="true" required="true" requiredMessage="The Pwd field is required."/>
+                                <h:outputLabel value="Pwd:" for="pwd2" />
+                                <p:password id="pwd2" value="#{sysuserManagedBean.currentSysuser.pwd}" title="Pwd"  feedback="false"
+                                            redisplay="true" required="true" requiredMessage="The Pwd field is required."/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.status}" title="Status"/>
+                                <h:outputLabel value="Sid:" for="sid" />
+                                <p:inputText id="sid" value="#{sysuserManagedBean.currentSysuser.sid}" title="Sid" />
+                                <h:outputLabel value="Sidpwd:" for="sidpwd" />
+                                <p:inputText id="sidpwd" value="#{sysuserManagedBean.currentSysuser.sidpwd}" title="Sidpwd" />
+                                <h:outputLabel value="Ssoid:" for="ssoid" />
+                                <p:inputText id="ssoid" value="#{sysuserManagedBean.currentSysuser.ssoid}" title="Ssoid" />
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{sysuserManagedBean.currentSysuser.tel}" title="Tel" />
+                                <h:outputLabel value="Mobile:" for="mobile" />
+                                <p:inputText id="mobile" value="#{sysuserManagedBean.currentSysuser.mobile}" title="Mobile" />     
+                                <h:outputLabel value="Mailadd:" for="mailadd" />
+                                <p:inputText id="mailadd" value="#{sysuserManagedBean.currentSysuser.mailadd}" title="Mailadd" />                  
+                                <h:outputLabel value="Tel2:" for="tel2" />
+                                <p:inputText id="tel2" value="#{sysuserManagedBean.currentSysuser.tel2}" title="Tel2" />
+                                <h:outputLabel value="Mobile2:" for="mobile2" />
+                                <p:inputText id="mobile2" value="#{sysuserManagedBean.currentSysuser.mobile2}" title="Mobile2" />
+                                <h:outputLabel value="Mailadd2:" for="mailadd2" />
+                                <p:inputText id="mailadd2" value="#{sysuserManagedBean.currentSysuser.mailadd2}" title="Mailadd2" />
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{sysuserManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="User Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput"> 
+                                <h:outputText value="Userid:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.userid}" title="Userid"/>
+                                <h:outputText value="Name:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.name}" title="Name"/>
+                                <h:outputText value="Employeeid:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.employeeid}" title="Employeeid"/>
+                                <h:outputText value="Sid:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.sid}" title="Sid"/>
+                                <h:outputText value="Sidpwd:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.sidpwd}" title="Sidpwd"/>
+                                <h:outputText value="Ssoid:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.ssoid}" title="Ssoid"/>
+                                <h:outputText value="Tel:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.tel}" title="Tel"/>
+                                <h:outputText value="Mobile:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.mobile}" title="Mobile"/>                     
+                                <h:outputText value="Mailadd:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.mailadd}" title="Mailadd"/>                                             
+                                <h:outputText value="Tel2:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.tel2}" title="Tel2"/>
+                                <h:outputText value="Mobile2:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.mobile2}" title="Mobile2"/>
+                                <h:outputText value="Mailadd2:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.mailadd2}" title="Mailadd2"/>  
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{sysuserManagedBean.currentSysuser.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{sysuserManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{sysuserManagedBean.currentSysuser.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{sysuserManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{sysuserManagedBean.currentSysuser.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

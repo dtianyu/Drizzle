@@ -1,0 +1,444 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <h:outputScript library="js" name="itemMasterList.js" target="head"></h:outputScript>
+                        <p:growl id="growl" showDetail="true" sticky="true" />  
+                        <p:dataTable value="#{itemMasterManagedBean.model}" var="item" styleClass="tbllist"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  lazy="true">
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{itemMasterManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>资料维护</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.itemno}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itemno}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.itemdesc}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itemdesc}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="Itemspec"/>
+                                </f:facet>
+                                <h:outputText value="#{item.itemspec}"/>
+                            </p:column>
+                            <p:column styleClass="w040">
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:menuButton value="#{i18n.btnOperate}" style="float: right">  
+                                    <p:menuitem id="btnView" actionListener="#{itemMasterManagedBean.view(item)}" icon="ui-icon-document" value="#{i18n.btnView}" 
+                                                oncomplete="viewDialog.show()" update=":formView:dlgView"/>                                 
+                                    <p:menuitem id="btnEdit" actionListener="#{itemMasterManagedBean.edit(item)}" icon="ui-icon-pencil" value="#{i18n.btnEdit}" 
+                                                rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>                                                     
+                                    <p:menuitem id="btnDelete" actionListener="#{itemMasterManagedBean.delete(item)}" icon="ui-icon-close" value="#{i18n.btnDelete}" 
+                                                rendered="#{item.status!='V' }" update=":formList"/>                  
+                                </p:menuButton>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{itemMasterManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="ItemMaster Info" widgetVar="newDialog" modal="true"  onShow="setItemPropertyReadOnly('formNew')" >
+                            <p:panelGrid id="plgNew" columns="6" columnClasses="plgLable,plgInput,plgLabel,plgInput,plgLabel,plgInput">
+                                <h:outputLabel value="Class1:" for="class1" />
+                                <p:selectOneMenu id="class1" value="#{itemMasterManagedBean.newEntity.class1}" required="true" requiredMessage="Class1不可空白"
+                                                 converter="itemClassConverter" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemMasterManagedBean.itemClassOnes}" var="c1" itemLabel="#{c1.classdesc}" itemValue="#{c1}"/>
+                                    <p:ajax listener="#{itemMasterManagedBean.handleNewItemClassOneChanged}"  update="plgNew" oncomplete="setItemProperty('formNew')"/>
+                                </p:selectOneMenu>                         
+                                <h:outputLabel value="Class2:" for="class2" />
+                                <p:selectOneMenu id="class2" value="#{itemMasterManagedBean.newEntity.class2}"  required="true" requiredMessage="Class2不可空白"
+                                                 converter="itemClassConverter"  >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemMasterManagedBean.itemClassTwos}" var="c2" itemLabel="#{c2.classdesc}" itemValue="#{c2}"/>
+                                    <p:ajax listener="#{itemMasterManagedBean.handleNewItemClassTwoChanged()}" update="plgNew" oncomplete="setItemProperty('formNew')"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Class3:" for="class3" />
+                                <p:selectOneMenu id="class3" value="#{itemMasterManagedBean.newEntity.class3}"  required="true" requiredMessage="Class3不可空白"
+                                                 converter="itemClassConverter" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemMasterManagedBean.itemClassThrees}" var="c3" itemLabel="#{c3.classdesc}" itemValue="#{c3}"/>
+                                    <p:ajax listener="#{itemMasterManagedBean.handleNewItemClassThreeChanged()}" update="plgNew"  oncomplete="setItemProperty('formNew')"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Autono:" for="autono" />
+                                <p:selectBooleanCheckbox id="autono" value="#{itemMasterManagedBean.newEntity.autono}" disabled="true" required="true" requiredMessage="The Autono field is required." /> 
+                                <h:outputLabel value="Itemno:" for="itemno" />
+                                <h:outputText  value="#{itemMasterManagedBean.newEntity.itemno}" title="Itemno" rendered="#{itemMasterManagedBean.newEntity.autono}" />
+                                <p:inputText id="itemno" value="#{itemMasterManagedBean.newEntity.itemno}" title="Itemno" required="true" requiredMessage="The Itemno field is required."
+                                             rendered="#{!itemMasterManagedBean.newEntity.autono}"/>
+                                <h:outputLabel value="Itemdesc:" for="itemdesc" />
+                                <p:inputText id="itemdesc" value="#{itemMasterManagedBean.newEntity.itemdesc}" title="Itemdesc" required="true" requiredMessage="The Itemdesc field is required."/>
+                                <h:outputLabel value="Itemspec:" for="itemspec" />
+                                <p:inputText id="itemspec" value="#{itemMasterManagedBean.newEntity.itemspec}" title="Itemspec" />
+                                <h:outputLabel value="Itemdesc2:" for="itemdesc2" />
+                                <p:inputText id="itemdesc2" value="#{itemMasterManagedBean.newEntity.itemdesc2}" title="Itemdesc2" />
+                                <h:outputLabel value="Itemspec2:" for="itemspec2" />
+                                <p:inputText id="itemspec2" value="#{itemMasterManagedBean.newEntity.itemspec2}" title="Itemspec2" />                   
+                                <h:outputLabel value="Itemcode:" for="itemcode" />
+                                <p:inputText id="itemcode" value="#{itemMasterManagedBean.newEntity.itemcode}" title="Itemcode" />
+                                <h:outputLabel value="Property:" for="property" />
+                                <p:selectOneMenu id="property" value="#{itemMasterManagedBean.newEntity.property}"  required="true" requiredMessage="The Property field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputLabel value="Maketype:" for="maketype" />
+                                <p:selectOneMenu id="maketype" value="#{itemMasterManagedBean.newEntity.maketype}"  required="true" requiredMessage="The Maketype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputLabel value="Potype:" for="potype" />
+                                <p:selectOneMenu id="potype" value="#{itemMasterManagedBean.newEntity.potype}"  required="true" requiredMessage="The Potype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Bbstype:" for="bbstype" />
+                                <p:selectOneMenu id="bbstype" value="#{itemMasterManagedBean.newEntity.bbstype}"  required="true" requiredMessage="The Bbstype field is required." >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu>                       
+                                <h:outputLabel value="Unittype:" for="unittype" />
+                                <p:selectOneMenu id="unittype" value="#{itemMasterManagedBean.newEntity.unittype}"  required="true" requiredMessage="The Unittype field is required." 
+                                                 onchange="setItemProperty('formNew')">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue="" />  
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}"  />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Unit:" for="unit" />
+                                <p:inputText id="unit" value="#{itemMasterManagedBean.newEntity.unit}" title="Unit" required="true" requiredMessage="The Unit field is required." widgetVar="unit" />
+                                <h:outputLabel value="Unit2:" for="unit2"  />
+                                <p:inputText id="unit2" value="#{itemMasterManagedBean.newEntity.unit2}" title="Unit2" />
+                                <h:outputLabel value="Unitexch:" for="unitexch" />
+                                <p:inputText id="unitexch" value="#{itemMasterManagedBean.newEntity.unitexch}" title="Unitexch" />
+                                <h:outputLabel value="Unitsales:" for="unitsales" />
+                                <p:inputText id="unitsales" value="#{itemMasterManagedBean.newEntity.unitsales}" title="Unitsales"  
+                                             onblur="setItemUnitCode('formNew')" required="true" requiredMessage="The Unitsales field is required." />
+                                <h:outputLabel value="Unitpurchase:" for="unitpurchase" />
+                                <p:inputText id="unitpurchase" value="#{itemMasterManagedBean.newEntity.unitpurchase}" title="Unitpurchase" 
+                                             onblur="setItemUnitCode('formNew')" required="true" requiredMessage="The Unitpurchase field is required." />
+                                <h:outputLabel value="Unitcode:" for="unitcode" />
+                                <p:inputText id="unitcode" value="#{itemMasterManagedBean.newEntity.unitcode}" title="Unitcode" />
+                                <h:outputLabel value="Invtype:" for="invtype" />
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemMasterManagedBean.newEntity.invtype}" required="true" requiredMessage="The Invtype field is required."/>  
+                                <h:outputLabel value="Poqtymin:" for="poqtymin" />
+                                <p:inputText id="poqtymin" value="#{itemMasterManagedBean.newEntity.poqtymin}" title="Poqtymin" />
+                                <h:outputLabel value="Poqtymax:" for="poqtymax" />
+                                <p:inputText id="poqtymax" value="#{itemMasterManagedBean.newEntity.poqtymax}" title="Poqtymax" />
+                                <h:outputLabel value="Buyerid:" for="buyerid" />
+                                <p:inputText id="buyerid" value="#{itemMasterManagedBean.newEntity.buyerid}" title="Buyerid" />                      
+                                <h:outputLabel value="Invqtymin:" for="invqtymin" />
+                                <p:inputText id="invqtymin" value="#{itemMasterManagedBean.newEntity.invqtymin}" title="Invqtymin" />
+                                <h:outputLabel value="Invqtymax:" for="invqtymax" />
+                                <p:inputText id="invqtymax" value="#{itemMasterManagedBean.newEntity.invqtymax}" title="Invqtymax" />
+                                <h:outputLabel value="Barcode:" for="barcode" />
+                                <p:inputText id="barcode" value="#{itemMasterManagedBean.newEntity.barcode}" title="Barcode" />
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{itemMasterManagedBean.newEntity.remark}" title="Remark" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{itemMasterManagedBean.newEntity.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{itemMasterManagedBean.newEntity.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{itemMasterManagedBean.newEntity.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{itemMasterManagedBean.newEntity.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{itemMasterManagedBean.newEntity.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{itemMasterManagedBean.newEntity.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{itemMasterManagedBean.newEntity.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{itemMasterManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     onmousedown="setItemPropertyUpdatable('formNew')"  oncomplete="newDialog.hide();" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="ItemMaster Info" widgetVar="editDialog" modal="true"  onShow="setItemPropertyReadOnly('formEdit')" >
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLabel,plgInput,plgLabel,plgInput">
+                                <h:outputLabel value="Class1:" for="class1" />
+                                <p:selectOneMenu id="class1" value="#{itemMasterManagedBean.currentEntity.class1}" converter="itemClassConverter" disabled="true" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassOnes}" var="c1" itemLabel="#{c1.classdesc}" itemValue="#{c1}"/>
+                                </p:selectOneMenu>        
+                                <h:outputLabel value="Class2:" for="class2" />
+                                <p:selectOneMenu id="class2" value="#{itemMasterManagedBean.currentEntity.class2}" converter="itemClassConverter" disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassTwos}" var="c2" itemLabel="#{c2.classdesc}" itemValue="#{c2}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Class3:" for="class3" />
+                                <p:selectOneMenu id="class3" value="#{itemMasterManagedBean.currentEntity.class3}"  converter="itemClassConverter" disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassThrees}" var="c3" itemLabel="#{c3.classdesc}" itemValue="#{c3}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Autono:" for="autono" />
+                                <p:selectBooleanCheckbox id="autono" value="#{itemMasterManagedBean.newEntity.autono}" disabled="true" />  
+                                <h:outputLabel value="Itemno:" for="itemno" />
+                                <h:outputText id="itemno" value="#{itemMasterManagedBean.currentEntity.itemno}" title="Itemno" />
+                                <h:outputLabel value="Itemdesc:" for="itemdesc" />
+                                <p:inputText id="itemdesc" value="#{itemMasterManagedBean.currentEntity.itemdesc}" title="Itemdesc" required="true" requiredMessage="The Itemdesc field is required."/>
+                                <h:outputLabel value="Itemspec:" for="itemspec" />
+                                <p:inputText id="itemspec" value="#{itemMasterManagedBean.currentEntity.itemspec}" title="Itemspec" />
+                                <h:outputLabel value="Itemdesc2:" for="itemdesc2" />
+                                <p:inputText id="itemdesc2" value="#{itemMasterManagedBean.currentEntity.itemdesc2}" title="Itemdesc2" />
+                                <h:outputLabel value="Itemspec2:" for="itemspec2" />
+                                <p:inputText id="itemspec2" value="#{itemMasterManagedBean.currentEntity.itemspec2}" title="Itemspec2" />                        
+                                <h:outputLabel value="Itemcode:" for="itemcode" />
+                                <p:inputText id="itemcode" value="#{itemMasterManagedBean.currentEntity.itemcode}" title="Itemcode" />
+                                <h:outputLabel value="Property:" for="property" />
+                                <p:selectOneMenu id="property" value="#{itemMasterManagedBean.currentEntity.property}"  required="true" requiredMessage="The Property field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputLabel value="Maketype:" for="maketype" />
+                                <p:selectOneMenu id="maketype" value="#{itemMasterManagedBean.currentEntity.maketype}"  required="true" requiredMessage="The Maketype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputLabel value="Potype:" for="potype" />
+                                <p:selectOneMenu id="potype" value="#{itemMasterManagedBean.currentEntity.potype}"  required="true" requiredMessage="The Potype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Bbstype:" for="bbstype" />
+                                <p:selectOneMenu id="bbstype" value="#{itemMasterManagedBean.currentEntity.bbstype}"  required="true" requiredMessage="The Bbstype field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Unittype:" for="unittype" />
+                                <p:selectOneMenu id="unittype" value="#{itemMasterManagedBean.currentEntity.unittype}"  required="true" requiredMessage="The Unittype field is required." 
+                                                 onchange="setItemProperty('formEdit')">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}"  />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Unit:" for="unit" />
+                                <p:inputText id="unit" value="#{itemMasterManagedBean.currentEntity.unit}" title="Unit" required="true" requiredMessage="The Unit field is required."/>
+                                <h:outputLabel value="Unit2:" for="unit2" />
+                                <p:inputText id="unit2" value="#{itemMasterManagedBean.currentEntity.unit2}" title="Unit2"/>
+                                <h:outputLabel value="Unitexch:" for="unitexch" />
+                                <p:inputText id="unitexch" value="#{itemMasterManagedBean.currentEntity.unitexch}" title="Unitexch"/>
+                                <h:outputLabel value="Unitsales:" for="unitsales" />
+                                <p:inputText id="unitsales" value="#{itemMasterManagedBean.currentEntity.unitsales}" title="Unitsales" 
+                                             onblur="setItemUnitCode('formEdit')" required="true" requiredMessage="The Unitsales field is required."/>
+                                <h:outputLabel value="Unitpurchase:" for="unitpurchase" />
+                                <p:inputText id="unitpurchase" value="#{itemMasterManagedBean.currentEntity.unitpurchase}" title="Unitpurchase" 
+                                             onblur="setItemUnitCode('formEdit')" required="true" requiredMessage="The Unitpurchase field is required."/>
+                                <h:outputLabel value="Unitcode:" for="unitcode" />
+                                <p:inputText id="unitcode" value="#{itemMasterManagedBean.currentEntity.unitcode}" title="Unitcode" />
+                                <h:outputLabel value="Invtype:" for="invtype" />
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemMasterManagedBean.currentEntity.invtype}" required="true" requiredMessage="The Invtype field is required."/>  
+                                <h:outputLabel value="Poqtymin:" for="poqtymin" />
+                                <p:inputText id="poqtymin" value="#{itemMasterManagedBean.currentEntity.poqtymin}" title="Poqtymin" />
+                                <h:outputLabel value="Poqtymax:" for="poqtymax" />
+                                <p:inputText id="poqtymax" value="#{itemMasterManagedBean.currentEntity.poqtymax}" title="Poqtymax" />
+                                <h:outputLabel value="Buyerid:" for="buyerid" />
+                                <p:inputText id="buyerid" value="#{itemMasterManagedBean.currentEntity.buyerid}" title="Buyerid" />                         
+                                <h:outputLabel value="Invqtymin:" for="invqtymin" />
+                                <p:inputText id="invqtymin" value="#{itemMasterManagedBean.currentEntity.invqtymin}" title="Invqtymin" />
+                                <h:outputLabel value="Invqtymax:" for="invqtymax" />
+                                <p:inputText id="invqtymax" value="#{itemMasterManagedBean.currentEntity.invqtymax}" title="Invqtymax" />
+                                <h:outputLabel value="Barcode:" for="barcode" />
+                                <p:inputText id="barcode" value="#{itemMasterManagedBean.currentEntity.barcode}" title="Barcode" />
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{itemMasterManagedBean.currentEntity.remark}" title="Remark" />
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{itemMasterManagedBean.currentEntity.status}" title="Status" />
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{itemMasterManagedBean.currentEntity.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{itemMasterManagedBean.currentEntity.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{itemMasterManagedBean.currentEntity.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{itemMasterManagedBean.currentEntity.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{itemMasterManagedBean.currentEntity.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{itemMasterManagedBean.currentEntity.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{itemMasterManagedBean.update()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     onmousedown="setItemPropertyUpdatable('formEdit')"   oncomplete="editDialog.hide();" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ItemMaster Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLabel,plgInput,plgLabel,plgInput">   
+                                <h:outputText value="Class1:"/>
+                                <p:selectOneMenu id="class1" value="#{itemMasterManagedBean.currentEntity.class1}" converter="itemClassConverter" disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassOnes}" var="c1" itemLabel="#{c1.classdesc}" itemValue="#{c1}"/>
+                                </p:selectOneMenu>        
+                                <h:outputText value="Class2:"/>
+                                <p:selectOneMenu id="class2" value="#{itemMasterManagedBean.currentEntity.class2}" converter="itemClassConverter" disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassTwos}" var="c2" itemLabel="#{c2.classdesc}" itemValue="#{c2}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Class3:"/>
+                                <p:selectOneMenu id="class3" value="#{itemMasterManagedBean.currentEntity.class3}"  converter="itemClassConverter" disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemClassQueryBean.itemClassThrees}" var="c3" itemLabel="#{c3.classdesc}" itemValue="#{c3}"/>
+                                </p:selectOneMenu>                  
+                                <h:outputText value="Autono:"/>
+                                <p:selectBooleanCheckbox id="autono" value="#{itemMasterManagedBean.currentEntity.autono}" disabled="true" />  
+                                <h:outputText value="Itemno:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemno}" title="Itemno"/>
+                                <h:outputText value="Itemdesc:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemdesc}" title="Itemdesc"/>
+                                <h:outputText value="Itemspec:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemspec}" title="Itemspec"/>
+                                <h:outputText value="Itemdesc2:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemdesc2}" title="Itemdesc2"/>
+                                <h:outputText value="Itemspec2:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemspec2}" title="Itemspec2"/>                        
+                                <h:outputText value="Itemcode:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.itemcode}" title="Itemcode"/>
+                                <h:outputText value="Property:"/>
+                                <p:selectOneMenu id="property" value="#{itemMasterManagedBean.currentEntity.property}"  disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemPropertyQueryBean.itemProperties}"  var="p"  itemLabel="#{p.name}" itemValue="#{p.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputText value="Maketype:"/>
+                                <p:selectOneMenu id="maketype" value="#{itemMasterManagedBean.currentEntity.maketype}"  disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemMakeTypeQueryBean.itemMakeTypes}"  var="m"  itemLabel="#{m.name}" itemValue="#{m.id}" />
+                                </p:selectOneMenu> 
+                                <h:outputText value="Potype:"/>
+                                <p:selectOneMenu id="potype" value="#{itemMasterManagedBean.currentEntity.potype}"  disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemPOTypeQueryBean.itemPOTypes}"  var="po"  itemLabel="#{po.name}" itemValue="#{po.id}" />
+                                </p:selectOneMenu>
+                                <h:outputText value="Bbstype:"/>
+                                <p:selectOneMenu id="bbstype" value="#{itemMasterManagedBean.currentEntity.bbstype}"  disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemBBSTypeQueryBean.itemBBSTypes}"  var="b"  itemLabel="#{b.name}" itemValue="#{b.id}" />
+                                </p:selectOneMenu>
+                                <h:outputText value="Unittype:"/>
+                                <p:selectOneMenu id="unittype" value="#{itemMasterManagedBean.currentEntity.unittype}"  disabled="true">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{itemUnitTypeQueryBean.itemUnitTypes}"  var="u"  itemLabel="#{u.name}" itemValue="#{u.id}"  />
+                                    <!--<p:ajax update="unit2" listener=""/>-->
+                                </p:selectOneMenu>
+                                <h:outputText value="Unit:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unit}" title="Unit"/>
+                                <h:outputText value="Unit2:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unit2}" title="Unit2"/>
+                                <h:outputText value="Unitexch:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unitexch}" title="Unitexch"/>
+                                <h:outputText value="Unitsales:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unitsales}" title="Unitsales"/>
+                                <h:outputText value="Unitpurchase:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unitpurchase}" title="Unitpurchase"/>
+                                <h:outputText value="Unitcode:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.unitcode}" title="Unitcode"/>
+                                <h:outputText value="Invtype:"/>
+                                <p:selectBooleanCheckbox id="invtype" value="#{itemMasterManagedBean.currentEntity.invtype}" disabled="true" />
+                                <h:outputText value="Stdprice:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.stdprice}" title="Stdprice"/>
+                                <h:outputText value="Stdcost:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.stdcost}" title="Stdcost"/>
+                                <h:outputText value="Avgcost:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.avgcost}" title="Avgcost"/>
+                                <h:outputText value="Pocost:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.pocost}" title="Pocost"/>
+                                <h:outputText value="Poqtymin:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.poqtymin}" title="Poqtymin"/>
+                                <h:outputText value="Poqtymax:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.poqtymax}" title="Poqtymax"/>
+                                <h:outputText value="Invqtymin:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.invqtymin}" title="Invqtymin"/>
+                                <h:outputText value="Invqtymax:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.invqtymax}" title="Invqtymax"/>
+                                <h:outputText value="Buyerid:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.buyerid}" title="Buyerid"/>
+                                <h:outputText value="Barcode:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.barcode}" title="Barcode"/>
+                                <h:outputLabel value="Status:" for="status" />
+                                <h:outputText id="status" value="#{itemMasterManagedBean.currentEntity.status}" title="Status" />
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{itemMasterManagedBean.currentEntity.remark}" title="Remark"/>
+                                <h:outputLabel value="Creator:" for="creator" />
+                                <h:outputText id="creator" value="#{itemMasterManagedBean.currentEntity.creator}" title="Creator" />
+                                <h:outputLabel value="Credate:" for="credate" />
+                                <h:outputText id="credate" value="#{itemMasterManagedBean.currentEntity.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Optuser:" for="optuser" />
+                                <h:outputText id="optuser" value="#{itemMasterManagedBean.currentEntity.optuser}" title="Optuser" />
+                                <h:outputLabel value="Optdate:" for="optdate" />
+                                <h:outputText id="optdate" value="#{itemMasterManagedBean.currentEntity.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="Cfmuser:" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{itemMasterManagedBean.currentEntity.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="Cfmdate:" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{itemMasterManagedBean.currentEntity.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{itemMasterManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{itemMasterManagedBean.currentEntity.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{itemMasterManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{itemMasterManagedBean.currentEntity.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

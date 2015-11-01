@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable value="#{departmentManagedBean.departments}" var="item" paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{departmentManagedBean.create()}" style="float: right"
+                                                 oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060" sortBy="#{item.deptcode}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.deptcode}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.deptcode}"/>
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.dept}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.dept}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="人数"/>
+                                </f:facet>
+                                <h:outputText value="#{item.employeeList.size()}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="LeaderId"/>
+                                </f:facet>
+                                <h:outputText value="#{item.leader.employeeid}" />
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="LeaderName"/>
+                                </f:facet>
+                                <h:outputText value="#{item.leader.name}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" action="#{departmentManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{departmentManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{departmentManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{departmentManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="Department Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Companyid:" for="companyid" />                       
+                                <p:selectOneMenu id="companyid" value="#{departmentManagedBean.newDepartment.companyid}"
+                                                 required="true" requiredMessage="The Companyid field is required." >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem  itemLabel="#{userManagedBean.company.companycode}" itemValue="#{userManagedBean.company.id}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Deptcode:" for="deptcode" />
+                                <p:inputText id="deptcode" value="#{departmentManagedBean.newDepartment.deptcode}" title="Deptcode" required="true" requiredMessage="The Deptcode field is required."/>
+                                <h:outputLabel value="Dept:" for="dept" />
+                                <p:inputText id="dept" value="#{departmentManagedBean.newDepartment.dept}" title="Dept" required="true" requiredMessage="The Dept field is required."/>
+                                <h:outputLabel value="Leader:" for="leader" />
+                                <p:selectOneMenu id="leader" value="#{departmentManagedBean.newDepartment.leader}" converter="employeeConverter"
+                                                 required="true" requiredMessage="The Leader field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem  itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{employeeQueryBean.employeeList}" var="e" itemLabel="#{e.name}" itemValue="#{e}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Pid:" for="pid" />
+                                <p:selectOneMenu id="pid" value="#{departmentManagedBean.newDepartment.pid}" converter="departmentConverter" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem  itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{departmentQueryBean.departments}" var="d" itemLabel="#{d.dept}" itemValue="#{d}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{departmentManagedBean.newDepartment.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{departmentManagedBean.newDepartment.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>           
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{departmentManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Department Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Deptcode:" for="deptcode" />
+                                <p:inputText id="deptcode" value="#{departmentManagedBean.currentDepartment.deptcode}" title="Deptcode" required="true" requiredMessage="The Deptcode field is required."/>
+                                <h:outputLabel value="Dept:" for="dept" />
+                                <p:inputText id="dept" value="#{departmentManagedBean.currentDepartment.dept}" title="Dept" required="true" requiredMessage="The Dept field is required."/>
+                                <h:outputLabel value="Pid:" for="pid" />
+                                <p:selectOneMenu id="pid" value="#{departmentManagedBean.currentDepartment.pid}" converter="departmentConverter">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem  itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{departmentQueryBean.departments}" var="d" itemLabel="#{d.dept}" itemValue="#{d}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Leader:" for="leader" />
+                                <p:selectOneMenu id="leader" value="#{departmentManagedBean.currentDepartment.leader}" converter="employeeConverter"
+                                                 required="true" requiredMessage="The Leader field is required.">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem  itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{employeeQueryBean.employeeList}" var="e" itemLabel="#{e.name}" itemValue="#{e}"/>
+                                </p:selectOneMenu>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{departmentManagedBean.currentDepartment.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{departmentManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="Position Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputText value="Deptcode:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.deptcode}" title="Deptcode"/>
+                                <h:outputText value="Dept:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.dept}" title="Dept"/>
+                                <h:outputText value="Pid:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.pid}" title="Pid"/>
+                                <h:outputText value="Leader:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.leader.name}" title="Leader"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{departmentManagedBean.currentDepartment.remark}" title="Remark"/>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{departmentManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{departmentManagedBean.currentDepartment.status!='V'}" oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{departmentManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{departmentManagedBean.currentDepartment.status=='V'}" oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

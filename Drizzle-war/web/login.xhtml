@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+        <ui:composition template="./template/jsfTemplate.xhtml">
+            <ui:define name="left"></ui:define>
+            <ui:define name="content">  
+                <div id="loginDailog">
+                    <h:form id="loginForm">
+                        <p:growl id="growl" showSummary="true" showDetail="true" autoUpdate="true" sticky="true"/>
+                        <p:panelGrid id="plgLogin" columns="2" columnClasses="plgLoginLabel,plgLoginTnput" styleClass="plglogin">  
+                            <h:outputLabel  for="userid" value="账户:"/>  
+                            <p:inputText id="userid"  value="#{userManagedBean.userid}" label="账户" required="true" /> 
+                            <h:outputLabel  for="pwd" value="密码:" />  
+                            <p:password id="pwd"  value="#{userManagedBean.pwd}"  label="密码"  required="true" /> 
+                            <h:outputLabel for="company" value="公司:" /> 
+                            <p:selectOneMenu id="company" value="#{userManagedBean.companycode}" style="width: 208px;" >
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItem itemLabel="Select One" itemValue="" />  
+                                <f:selectItems value="#{companyQueryBean.companies}" var="c"  itemLabel="#{c.company}" itemValue="#{c.companycode}" />
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:commandButton id="btnLogin" value="Log In" action="#{userManagedBean.login()}" update=":loginForm" styleClass="btnLogin" /> 
+
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

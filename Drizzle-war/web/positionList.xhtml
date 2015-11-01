@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="right">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable value="#{positionManagedBean.positions}" var="item"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45" styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{positionManagedBean.create()}" style="float: right"
+                                                 icon="ui-icon-plus"    oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Id"/>
+                                </f:facet>
+                                <h:outputText value="#{item.id}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Positioncode"/>
+                                </f:facet>
+                                <h:outputText value="#{item.positioncode}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Position"/>
+                                </f:facet>
+                                <h:outputText value="#{item.position}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Employees"/>
+                                </f:facet>
+                                <h:outputText value="#{item.employees}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Remark"/>
+                                </f:facet>
+                                <h:outputText value="#{item.remark}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{positionManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{positionManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{positionManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{positionManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">        
+                        <p:dialog id="dlgNew" header="Position Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="Positioncode:" for="positioncode" />
+                                <p:inputText id="positioncode" value="#{positionManagedBean.newPosition.positioncode}" title="Positioncode" />
+                                <h:outputLabel value="Position:" for="position" />
+                                <p:inputText id="position" value="#{positionManagedBean.newPosition.position}" title="Position" />
+                                <h:outputLabel value="Employees:" for="employees" />
+                                <p:inputText id="employees" value="#{positionManagedBean.newPosition.employees}" title="Employees" required="true" requiredMessage="The Employees field is required."/>
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{positionManagedBean.newPosition.remark}" title="Remark" />
+                                <h:outputLabel value="#{i18n.status}" for="status" />
+                                <h:outputText id="status" value="#{positionManagedBean.newPosition.status}" title="Status"/>
+                                <h:outputLabel value="#{i18n.creator}" for="creator" />
+                                <h:outputText id="creator" value="#{positionManagedBean.newPosition.creator}" title="Creator" />
+                                <h:outputLabel value="#{i18n.credate}" for="credate" />
+                                <h:outputText id="credate" value="#{positionManagedBean.newPosition.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.optuser}" for="optuser" />
+                                <h:outputText id="optuser" value="#{positionManagedBean.newPosition.optuser}" title="Optuser" />
+                                <h:outputLabel value="#{i18n.optdate}" for="optdate" />
+                                <h:outputText id="optdate" value="#{positionManagedBean.newPosition.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.cfmuser}" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{positionManagedBean.newPosition.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="#{i18n.cfmdate}" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{positionManagedBean.newPosition.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{positionManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Position Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="2" >
+                                <h:outputLabel value="Positioncode:" for="positioncode" />
+                                <p:inputText id="positioncode" value="#{positionManagedBean.currentPosition.positioncode}" title="Positioncode" />
+                                <h:outputLabel value="Position:" for="position" />
+                                <p:inputText id="position" value="#{positionManagedBean.currentPosition.position}" title="Position" />
+                                <h:outputLabel value="Employees:" for="employees" />
+                                <p:inputText id="employees" value="#{positionManagedBean.currentPosition.employees}" title="Employees" required="true" requiredMessage="The Employees field is required."/>
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{positionManagedBean.currentPosition.remark}" title="Remark" />
+                                <h:outputLabel value="#{i18n.status}" for="status" />
+                                <h:outputText id="status" value="#{positionManagedBean.currentPosition.status}" title="Status" />
+                                <h:outputLabel value="#{i18n.creator}" for="creator" />
+                                <h:outputText id="creator" value="#{positionManagedBean.currentPosition.creator}" title="Creator" />
+                                <h:outputLabel value="#{i18n.credate}" for="credate" />
+                                <h:outputText id="credate" value="#{positionManagedBean.currentPosition.credate}" title="Credate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.optuser}" for="optuser" />
+                                <h:outputText id="optuser" value="#{positionManagedBean.currentPosition.optuser}" title="Optuser" />
+                                <h:outputLabel value="#{i18n.optdate}" for="optdate" />
+                                <h:outputText id="optdate" value="#{positionManagedBean.currentPosition.optdate}" title="Optdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputLabel value="#{i18n.cfmuser}" for="cfmuser" />
+                                <h:outputText id="cfmuser" value="#{positionManagedBean.currentPosition.cfmuser}" title="Cfmuser" />
+                                <h:outputLabel value="#{i18n.cfmdate}" for="cfmdate" />
+                                <h:outputText id="cfmdate" value="#{positionManagedBean.currentPosition.cfmdate}" title="Cfmdate" >
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{positionManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="Position Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="2">
+                                <h:outputText value="Id:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.id}" title="Id"/>
+                                <h:outputText value="Positioncode:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.positioncode}" title="Positioncode"/>
+                                <h:outputText value="Position:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.position}" title="Position"/>
+                                <h:outputText value="Employees:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.employees}" title="Employees"/>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{positionManagedBean.currentPosition.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{positionManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{positionManagedBean.currentPosition.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{positionManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{positionManagedBean.currentPosition.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

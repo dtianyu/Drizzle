@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable id="tblList" value="#{serviceClassManagedBean.serviceClasses}" var="item"  paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{serviceClassManagedBean.create()}" style="float: right" icon="ui-icon-plus"  
+                                                 oncomplete="newDialog.show();" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.code}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.classid}"/>
+                            </p:column>
+                            <p:column styleClass="w200">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.name}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.serviceclass}"/>
+                            </p:column>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.status}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{serviceClassManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                 
+                                <p:commandButton id="btnEdit" actionListener="#{serviceClassManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit" />
+                                <p:commandButton id="btnView" actionListener="#{serviceClassManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView" />
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{serviceClassManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>  
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="ServiceClass Info" widgetVar="newDialog" modal="true"  >
+                            <p:panelGrid id="plgNew" columns="2" columnClasses="plgLable,plgInput">
+                                <h:outputLabel value="Classid:" for="classid" />
+                                <p:inputText id="classid" value="#{serviceClassManagedBean.newServiceClass.classid}" title="Classid" required="true" requiredMessage="The Classid field is required."/>
+                                <h:outputLabel value="Class:" for="serviceclass" />
+                                <p:inputText id="serviceclass" value="#{serviceClassManagedBean.newServiceClass.serviceclass}" title="Serviceclass" required="true" requiredMessage="The Serviceclass field is required."/>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{serviceClassManagedBean.newServiceClass.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.creator.name}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.optuser.name}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.cfmuser.name}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.newServiceClass.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{serviceClassManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="ServiceClass Info" widgetVar="editDialog" modal="true"  >
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput">
+                                <h:outputText value="Classid:"  />
+                                <h:outputText id="classid" value="#{serviceClassManagedBean.currentServiceClass.classid}" title="Classid" />
+                                <h:outputLabel value="Class:" for="serviceclass" />
+                                <p:inputText id="serviceclass" value="#{serviceClassManagedBean.currentServiceClass.serviceclass}" title="Serviceclass" required="true" requiredMessage="The Serviceclass field is required."/>
+                                <h:outputText value="Remark:"/>
+                                <p:inputText value="#{serviceClassManagedBean.currentServiceClass.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.creator.name}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.optuser.name}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.cfmuser.name}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{serviceClassManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="ServiceClass Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput"> 
+                                <h:outputText value="#{i18n.code}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.classid}" title="Classid"/>
+                                <h:outputText value="#{i18n.name}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.serviceclass}" title="Serviceclass"/>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.status}" title="Status"/>
+                                <h:outputText value="#{i18n.creator}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.creator.name}" title="Creator"/>
+                                <h:outputText value="#{i18n.credate}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="#{i18n.optuser}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.optuser.name}" title="Optuser"/>
+                                <h:outputText value="#{i18n.optdate}"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.cfmuser.name}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{serviceClassManagedBean.currentServiceClass.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{serviceClassManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{serviceClassManagedBean.currentServiceClass.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{serviceClassManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{serviceClassManagedBean.currentServiceClass.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

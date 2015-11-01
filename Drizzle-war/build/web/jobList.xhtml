@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"  showDetail="true" autoUpdate="true" closable="true" /> 
+                        <p:dataTable value="#{jobManagedBean.jobs}" var="item"  paginator="true" paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45" styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{jobManagedBean.create()}" style="float: right"
+                                                 icon="ui-icon-plus"    oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="Id"/>
+                                </f:facet>
+                                <h:outputText value="#{item.id}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Jobcode"/>
+                                </f:facet>
+                                <h:outputText value="#{item.jobcode}"/>
+                            </p:column>
+                            <p:column styleClass="w160">
+                                <f:facet name="header">
+                                    <h:outputText value="Job"/>
+                                </f:facet>
+                                <h:outputText value="#{item.job}"/>
+                            </p:column>
+                            <p:column  styleClass="w040">
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{item.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{jobManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}" update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{jobManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}" oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{jobManagedBean.edit(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{jobManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">        
+                        <p:dialog id="dlgNew" header="Job Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput">
+                                <h:outputLabel value="Jobcode:" for="jobcode" />
+                                <p:inputText id="jobcode" value="#{jobManagedBean.newJob.jobcode}" title="Jobcode" required="true" requiredMessage="The Jobcode field is required."/>
+                                <h:outputLabel value="Job:" for="job" />
+                                <p:inputText id="job" value="#{jobManagedBean.newJob.job}" title="Job" required="true" requiredMessage="The Job field is required."/>
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{jobManagedBean.newJob.remark}" title="Remark" />
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{jobManagedBean.newJob.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{jobManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Job Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput">
+                                <h:outputLabel value="Id:" for="id" />
+                                <h:outputText id="id" value="#{jobManagedBean.currentJob.id}" title="Id" />
+                                <h:outputLabel value="Jobcode:" for="jobcode" />
+                                <p:inputText id="jobcode" value="#{jobManagedBean.currentJob.jobcode}" title="Jobcode" required="true" requiredMessage="The Jobcode field is required."/>
+                                <h:outputLabel value="Job:" for="job" />
+                                <p:inputText id="job" value="#{jobManagedBean.currentJob.job}" title="Job" required="true" requiredMessage="The Job field is required."/>
+                                <h:outputLabel value="Remark:" for="remark" />
+                                <p:inputText id="remark" value="#{jobManagedBean.currentJob.remark}" title="Remark" />
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{jobManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="Job Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="2" columnClasses="plgLable,plgInput">
+                                <h:outputText value="Jobcode:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.jobcode}" title="Jobcode"/>
+                                <h:outputText value="Job:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.job}" title="Job"/>
+                                <h:outputText value="Remark:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.remark}" title="Remark"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{jobManagedBean.currentJob.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnVerify" actionListener="#{jobManagedBean.verify()}" icon="ui-icon-locked" value="复核" style="float: right"
+                                                     rendered="#{jobManagedBean.currentJob.status!='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                    <p:commandButton id="btnUnverify" actionListener="#{jobManagedBean.unverify()}" icon="ui-icon-unlocked" value="取消" style="float: right"
+                                                     rendered="#{jobManagedBean.currentJob.status=='V'}"    oncomplete="viewDialog.hide()" update=":formList"/>
+                                </f:facet>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

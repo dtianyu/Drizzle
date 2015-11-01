@@ -1,0 +1,378 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./template/jsfTemplate.xhtml">
+
+            <ui:define name="content">
+                <f:view>
+                    <h:form id="formList">
+                        <p:messages id="msg"></p:messages>
+                        <p:dataTable value="#{employeeManagedBean.employees}" var="item" paginator="true"  paginatorPosition="bottom" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,30,45"  styleClass="tbllist" >
+                            <f:facet name="header">
+                                <p:commandButton id="btnCreate" value="新增" actionListener="#{employeeManagedBean.create()}" style="float: right" icon="ui-icon-plus" 
+                                                 oncomplete="newDialog.show()" update=":formNew:dlgNew"/>
+                                <h:outputLabel>#{i18n.formlisttitel}</h:outputLabel>
+                            </f:facet>
+                            <p:column styleClass="w060">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.code}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.employeeid}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.name}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.name}"/>
+                            </p:column>
+                            <p:column styleClass="w040">
+                                <f:facet name="header">
+                                    <h:outputText value="Gender"/>
+                                </f:facet>
+                                <h:outputText value="#{item.gender}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Birthday"/>
+                                </f:facet>
+                                <h:outputText value="#{item.birthday}">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column styleClass="w120">
+                                <f:facet name="header">
+                                    <h:outputText value="Mobile"/>
+                                </f:facet>
+                                <h:outputText value="#{item.mobile}"/>
+                            </p:column>
+                            <p:column styleClass="w100">
+                                <f:facet name="header">
+                                    <h:outputText value="Deptid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.deptid.dept}"/>
+                            </p:column>
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Jobid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.jobid.job}"/>
+                            </p:column>     
+                            <p:column styleClass="w080">
+                                <f:facet name="header">
+                                    <h:outputText value="Positionid"/>
+                                </f:facet>
+                                <h:outputText value="#{item.positionid.position}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Do"/>
+                                </f:facet>
+                                <p:commandButton id="btnDelete" actionListener="#{employeeManagedBean.delete(item)}" icon="ui-icon-close" value="删除" style="float: right" 
+                                                 rendered="#{item.status!='V'}"  update=":formList"/>                  
+                                <p:commandButton id="btnEdit" actionListener="#{employeeManagedBean.edit(item)}" icon="ui-icon-pencil" value="修改" style="float: right"
+                                                 rendered="#{item.status!='V'}"  oncomplete="editDialog.show()" update=":formEdit:dlgEdit"/>
+                                <p:commandButton id="btnView" actionListener="#{employeeManagedBean.view(item)}" icon="ui-icon-document" value="查看" style="float: right"
+                                                 oncomplete="viewDialog.show()" update=":formView:dlgView"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton id="btnLoad" value="刷新" actionListener="#{employeeManagedBean.init()}" style="float: right"
+                                                 icon="ui-icon-search"    update=":formList"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form id="formNew">
+                        <p:dialog id="dlgNew" header="Employee Info" widgetVar="newDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Employeeid:" for="employeeid" />
+                                <p:inputText id="employeeid" value="#{employeeManagedBean.newEmployee.employeeid}" title="Employeeid" required="true" requiredMessage="The Employeeid field is required."/>
+                                <h:outputLabel value="Name:" for="name" />
+                                <p:inputText id="name" value="#{employeeManagedBean.newEmployee.name}" title="Name" required="true" requiredMessage="The Name field is required."/>
+                                <h:outputLabel value="Gender:" for="gender" />
+                                <p:selectOneMenu  id="gender" value="#{employeeManagedBean.newEmployee.gender}"  required="true" requiredMessage="The Gender field is required.">
+                                    <f:selectItems value="#{genderQueryBean.genders}" var="g" itemLabel="#{g.name}" itemValue="#{g.id}"/>
+                                </p:selectOneMenu >             
+                                <h:outputLabel value="Deptid:" for="deptid" />
+                                <p:selectOneMenu id="deptid" value="#{employeeManagedBean.newEmployee.deptid}" converter="departmentConverter">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{departmentQueryBean.departments}" var="d" itemLabel="#{d.dept}" itemValue="#{d}"/>
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Jobid:" for="jobid" />
+                                <p:selectOneMenu id="jobid" value="#{employeeManagedBean.newEmployee.jobid}"  converter="jobConverter">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{jobQueryBean.jobs}" var="j" itemLabel="#{j.job}" itemValue="#{j}"/>
+                                </p:selectOneMenu>                                    
+                                <h:outputLabel value="Positionid:" for="positionid" />
+                                <p:selectOneMenu id="positionid" value="#{employeeManagedBean.newEmployee.positionid}" converter="positionConverter" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{positionQueryBean.positions}" var="p" itemLabel="#{p.position}" itemValue="#{p}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Alias:" for="alias" />
+                                <p:inputText id="alias" value="#{employeeManagedBean.newEmployee.alias}" title="Alias" />                        
+                                <h:outputLabel value="Birthday:" for="birthday" />
+                                <p:calendar id="birthday" value="#{employeeManagedBean.newEmployee.birthday}" title="Birthday" pattern="yyyy/MM/dd"
+                                            required="true" requiredMessage="The Birthday field is required."/>
+                                <h:outputLabel value="Birthplace:" for="birthplace" />
+                                <p:inputText id="birthplace" value="#{employeeManagedBean.newEmployee.birthplace}" title="Birthplace" />
+                                <h:outputLabel value="Married:" for="married" />
+                                <p:inputText id="married" value="#{employeeManagedBean.newEmployee.married}" title="Married" required="true" requiredMessage="The Married field is required."/>
+                                <h:outputLabel value="Health:" for="health" />
+                                <p:inputText id="health" value="#{employeeManagedBean.newEmployee.health}" title="Health" required="true" requiredMessage="The Health field is required."/>
+                                <h:outputLabel value="Politicestatus:" for="politicestatus" />
+                                <p:inputText id="politicestatus" value="#{employeeManagedBean.newEmployee.politicestatus}" title="Politicestatus" />
+                                <h:outputLabel value="Nationality:" for="nationality" />
+                                <p:inputText id="nationality" value="#{employeeManagedBean.newEmployee.nationality}" title="Nationality" required="true" requiredMessage="The Nationality field is required."/>
+                                <h:outputLabel value="Nativeplace:" for="nativeplace" />
+                                <p:inputText id="nativeplace" value="#{employeeManagedBean.newEmployee.nativeplace}" title="Nativeplace" required="true" requiredMessage="The Nativeplace field is required."/>
+                                <h:outputLabel value="Idcard:" for="idcard" />
+                                <p:inputText id="idcard" value="#{employeeManagedBean.newEmployee.idcard}" title="Idcard" required="true" requiredMessage="The Idcard field is required."/>
+                                <h:outputLabel value="Height:" for="height" />
+                                <p:inputText id="height" value="#{employeeManagedBean.newEmployee.height}" title="Height" />
+                                <h:outputLabel value="Weight:" for="weight" />
+                                <p:inputText id="weight" value="#{employeeManagedBean.newEmployee.weight}" title="Weight" />
+                                <h:outputLabel value="Bloodtype:" for="bloodtype" />
+                                <p:inputText id="bloodtype" value="#{employeeManagedBean.newEmployee.bloodtype}" title="Bloodtype" />
+                                <h:outputLabel value="Address:" for="address" />
+                                <p:inputText id="address" value="#{employeeManagedBean.newEmployee.address}" title="Address" />
+                                <h:outputLabel value="Addcontact:" for="addcontact" />
+                                <p:inputText id="addcontact" value="#{employeeManagedBean.newEmployee.addcontact}" title="Addcontact" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{employeeManagedBean.newEmployee.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Mobile:" for="mobile" />
+                                <p:inputText id="mobile" value="#{employeeManagedBean.newEmployee.mobile}" title="Mobile" />
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{employeeManagedBean.newEmployee.tel}" title="Tel" />
+                                <h:outputLabel value="Email:" for="email" />
+                                <p:inputText id="email" value="#{employeeManagedBean.newEmployee.email}" title="Email" />
+                                <h:outputLabel value="Degree:" for="degree" />
+                                <p:inputText id="degree" value="#{employeeManagedBean.newEmployee.degree}" title="Degree" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{employeeManagedBean.newEmployee.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{employeeManagedBean.newEmployee.bankaccount}" title="Bankaccount" />
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{employeeManagedBean.newEmployee.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnPersist" actionListener="#{employeeManagedBean.persist()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="newDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formEdit">
+                        <p:dialog id="dlgEdit" header="Employee Info" widgetVar="editDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputLabel value="Employeeid:" for="employeeid" />
+                                <h:outputText id="employeeid" value="#{employeeManagedBean.currentEmployee.employeeid}" title="Employeeid" />
+                                <h:outputLabel value="Name:" for="name" />
+                                <p:inputText id="name" value="#{employeeManagedBean.currentEmployee.name}" title="Name" required="true" requiredMessage="The Name field is required."/>
+                                <h:outputLabel value="Gender:" for="gender" />
+                                <p:selectOneMenu  id="gender" value="#{employeeManagedBean.currentEmployee.gender}"  required="true" requiredMessage="The Gender field is required.">
+                                    <f:selectItems value="#{genderQueryBean.genders}" var="g" itemLabel="#{g.name}" itemValue="#{g.id}"/>
+                                </p:selectOneMenu >             
+                                <h:outputLabel value="Deptid:" for="deptid" />
+                                <p:selectOneMenu id="deptid" value="#{employeeManagedBean.currentEmployee.deptid}" converter="departmentConverter">
+                                    <f:selectItems value="#{departmentQueryBean.departments}" var="d" itemLabel="#{d.dept}" itemValue="#{d}"/>
+                                </p:selectOneMenu>  
+                                <h:outputLabel value="Jobid:" for="jobid" />
+                                <p:selectOneMenu id="jobid" value="#{employeeManagedBean.currentEmployee.jobid}"  converter="jobConverter">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{jobQueryBean.jobs}" var="j" itemLabel="#{j.job}" itemValue="#{j}"/>
+                                </p:selectOneMenu>                                    
+                                <h:outputLabel value="Positionid:" for="positionid" />
+                                <p:selectOneMenu id="positionid" value="#{employeeManagedBean.currentEmployee.positionid}" converter="positionConverter" >
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItem itemLabel="Select One" itemValue=""/>
+                                    <f:selectItems value="#{positionQueryBean.positions}" var="p" itemLabel="#{p.position}" itemValue="#{p}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Alias:" for="alias" />
+                                <p:inputText id="alias" value="#{employeeManagedBean.currentEmployee.alias}" title="Alias" />
+                                <h:outputLabel value="Birthday:" for="birthday" />
+                                <p:calendar id="birthday" value="#{employeeManagedBean.currentEmployee.birthday}" title="Birthday" pattern="yyyy/MM/dd"
+                                            required="true" requiredMessage="The Birthday field is required."/>
+                                <h:outputLabel value="Birthplace:" for="birthplace" />
+                                <p:inputText id="birthplace" value="#{employeeManagedBean.currentEmployee.birthplace}" title="Birthplace" />
+                                <h:outputLabel value="Married:" for="married" />
+                                <p:inputText id="married" value="#{employeeManagedBean.currentEmployee.married}" title="Married" required="true" requiredMessage="The Married field is required."/>
+                                <h:outputLabel value="Health:" for="health" />
+                                <p:inputText id="health" value="#{employeeManagedBean.currentEmployee.health}" title="Health" required="true" requiredMessage="The Health field is required."/>
+                                <h:outputLabel value="Politicestatus:" for="politicestatus" />
+                                <p:inputText id="politicestatus" value="#{employeeManagedBean.currentEmployee.politicestatus}" title="Politicestatus" />
+                                <h:outputLabel value="Nationality:" for="nationality" />
+                                <p:inputText id="nationality" value="#{employeeManagedBean.currentEmployee.nationality}" title="Nationality" required="true" requiredMessage="The Nationality field is required."/>
+                                <h:outputLabel value="Nativeplace:" for="nativeplace" />
+                                <p:inputText id="nativeplace" value="#{employeeManagedBean.currentEmployee.nativeplace}" title="Nativeplace" required="true" requiredMessage="The Nativeplace field is required."/>
+                                <h:outputLabel value="Idcard:" for="idcard" />
+                                <p:inputText id="idcard" value="#{employeeManagedBean.currentEmployee.idcard}" title="Idcard" required="true" requiredMessage="The Idcard field is required."/>
+                                <h:outputLabel value="Height:" for="height" />
+                                <p:inputText id="height" value="#{employeeManagedBean.currentEmployee.height}" title="Height" />
+                                <h:outputLabel value="Weight:" for="weight" />
+                                <p:inputText id="weight" value="#{employeeManagedBean.currentEmployee.weight}" title="Weight" />
+                                <h:outputLabel value="Bloodtype:" for="bloodtype" />
+                                <p:inputText id="bloodtype" value="#{employeeManagedBean.currentEmployee.bloodtype}" title="Bloodtype" />
+                                <h:outputLabel value="Address:" for="address" />
+                                <p:inputText id="address" value="#{employeeManagedBean.currentEmployee.address}" title="Address" />
+                                <h:outputLabel value="Addcontact:" for="addcontact" />
+                                <p:inputText id="addcontact" value="#{employeeManagedBean.currentEmployee.addcontact}" title="Addcontact" />
+                                <h:outputLabel value="Zipcode:" for="zipcode" />
+                                <p:inputText id="zipcode" value="#{employeeManagedBean.currentEmployee.zipcode}" title="Zipcode" />
+                                <h:outputLabel value="Mobile:" for="mobile" />
+                                <p:inputText id="mobile" value="#{employeeManagedBean.currentEmployee.mobile}" title="Mobile" />
+                                <h:outputLabel value="Tel:" for="tel" />
+                                <p:inputText id="tel" value="#{employeeManagedBean.currentEmployee.tel}" title="Tel" />
+                                <h:outputLabel value="Email:" for="email" />
+                                <p:inputText id="email" value="#{employeeManagedBean.currentEmployee.email}" title="Email" />
+                                <h:outputLabel value="Degree:" for="degree" />
+                                <p:inputText id="degree" value="#{employeeManagedBean.currentEmployee.degree}" title="Degree" />
+                                <h:outputLabel value="Bankid:" for="bankid" />
+                                <p:inputText id="bankid" value="#{employeeManagedBean.currentEmployee.bankid}" title="Bankid" />
+                                <h:outputLabel value="Bankaccount:" for="bankaccount" />
+                                <p:inputText id="bankaccount" value="#{employeeManagedBean.currentEmployee.bankaccount}" title="Bankaccount" />
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <f:facet name="footer">
+                                    <p:commandButton id="btnSave" actionListener="#{employeeManagedBean.save()}" icon="ui-icon-disk" value="保存" style="float: right"
+                                                     oncomplete="editDialog.hide()" update=":formList"/>
+                                </f:facet> 
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                    <h:form id="formView">
+                        <p:dialog id="dlgView" header="Employee Info" widgetVar="viewDialog" modal="true">
+                            <p:panelGrid columns="6" columnClasses="plgLable,plgInput,plgLable,plgInput,plgLable,plgInput">
+                                <h:outputText value="Employeeid:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.employeeid}" title="Employeeid"/>
+                                <h:outputText value="Name:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.name}" title="Name"/>
+                                <h:outputText value="Gender:"/>
+                                <p:selectOneMenu  id="gender" value="#{employeeManagedBean.newEmployee.gender}" disabled="true">
+                                    <f:selectItems value="#{genderQueryBean.genders}" var="g" itemLabel="#{g.name}" itemValue="#{g.id}"/>
+                                </p:selectOneMenu >             
+                                <h:outputText value="Deptid:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.deptid.dept}" title="Deptid"/>
+                                <h:outputText value="Jobid:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.jobid.job}" title="Jobid"/>
+                                <h:outputText value="Positionid:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.positionid.position}" title="Positionid"/>
+                                <h:outputText value="Alias:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.alias}" title="Alias"/>
+                                <h:outputText value="Birthday:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.birthday}" title="Birthday">
+                                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                                </h:outputText>
+                                <h:outputText value="Birthplace:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.birthplace}" title="Birthplace"/>
+                                <h:outputText value="Married:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.married}" title="Married"/>
+                                <h:outputText value="Health:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.health}" title="Health"/>
+                                <h:outputText value="Politicestatus:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.politicestatus}" title="Politicestatus"/>
+                                <h:outputText value="Nationality:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.nationality}" title="Nationality"/>
+                                <h:outputText value="Nativeplace:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.nativeplace}" title="Nativeplace"/>
+                                <h:outputText value="Idcard:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.idcard}" title="Idcard"/>
+                                <h:outputText value="Height:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.height}" title="Height"/>
+                                <h:outputText value="Weight:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.weight}" title="Weight"/>
+                                <h:outputText value="Bloodtype:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.bloodtype}" title="Bloodtype"/>
+                                <h:outputText value="Address:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.address}" title="Address"/>
+                                <h:outputText value="Addcontact:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.addcontact}" title="Addcontact"/>
+                                <h:outputText value="Zipcode:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.zipcode}" title="Zipcode"/>
+                                <h:outputText value="Mobile:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.mobile}" title="Mobile"/>
+                                <h:outputText value="Tel:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.tel}" title="Tel"/>
+                                <h:outputText value="Email:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.email}" title="Email"/>
+                                <h:outputText value="Degree:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.degree}" title="Degree"/>
+                                <h:outputText value="Bankid:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.bankid}" title="Bankid"/>
+                                <h:outputText value="Bankaccount:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.bankaccount}" title="Bankaccount"/>
+                                <h:outputText value="Status:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.status}" title="Status"/>
+                                <h:outputText value="Creator:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.creator}" title="Creator"/>
+                                <h:outputText value="Credate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.credate}" title="Credate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Optuser:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.optuser}" title="Optuser"/>
+                                <h:outputText value="Optdate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.optdate}" title="Optdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                                <h:outputText value="Cfmuser:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.cfmuser}" title="Cfmuser"/>
+                                <h:outputText value="Cfmdate:"/>
+                                <h:outputText value="#{employeeManagedBean.currentEmployee.cfmdate}" title="Cfmdate">
+                                    <f:convertDateTime pattern="yyyy/MM/dd" />
+                                </h:outputText>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
